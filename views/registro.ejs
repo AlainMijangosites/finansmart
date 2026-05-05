@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FINANSMART — Registro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css"></head>
+<body class="auth-page"><div class="auth-wrap">
+<div class="auth-brand">
+  <div class="logo-wrap" style="margin-bottom:2.5rem">
+    <img src="/img/logo.png" width="44" height="44" alt="FINANSMART" style="border-radius:12px;flex-shrink:0">
+    FINAN<span class="green">SMART</span>
+  </div>
+  <h1>Empieza <span class="green">gratis</span> hoy<br>y transforma<br>tus finanzas.</h1>
+  <p>Sin tarjeta de crédito. Cancela cuando quieras.</p>
+  <ul class="feat-list"><li>Registro ilimitado de movimientos</li><li>Reportes y gráficas automáticas</li><li>Alertas de presupuesto</li><li>Metas de ahorro</li></ul>
+</div>
+<div class="auth-card">
+  <div class="ch">
+    <div class="logo-wrap">
+      <img src="/img/logo.png" width="32" height="32" alt="FINANSMART" style="border-radius:9px;flex-shrink:0">
+      FINANSMART
+    </div>
+    <span class="link-r">¿Ya tienes cuenta? <strong onclick="location='/login'">Inicia sesión →</strong></span>
+  </div>
+  <h2>Crea tu cuenta</h2>
+  <p class="auth-sub">Completa los datos · Menos de 1 minuto</p>
+  <% if(error){%><div class="a-err">⚠ <%=error%></div><%}%>
+  <form method="POST" action="/registro">
+    <div class="r2">
+      <div class="fg"><label>NOMBRE(S)</label><input type="text" name="nombre" placeholder="Nombre(s)" required></div>
+      <div class="fg"><label>APELLIDOS</label><input type="text" name="apellidos" placeholder="Apellidos" required></div>
+    </div>
+    <div class="fg"><label>CORREO</label><input type="email" name="correo" placeholder="correo@ejemplo.com" required></div>
+    <div class="r2">
+      <div class="fg"><label>CONTRASEÑA</label><input type="password" name="contrasena" id="rp" placeholder="Mín. 6 caracteres" required oninput="cs(this.value)"></div>
+      <div class="fg"><label>CONFIRMAR</label><input type="password" name="confirmar" placeholder="Repetir contraseña" required></div>
+    </div>
+    <div class="str-bar"><div class="sb" id="s1"></div><div class="sb" id="s2"></div><div class="sb" id="s3"></div><span class="sb-l" id="sl">Seguridad</span></div>
+    <label class="chk" style="margin-bottom:1rem"><input type="checkbox" required> Acepto los <span class="lg">Términos y Condiciones</span></label>
+    <button type="submit" class="btn-p full">CREAR CUENTA GRATIS</button>
+  </form>
+  <div class="divider"><span>ó</span></div>
+  <button class="btn-google" type="button">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.8 2.4 30.3 0 24 0 14.7 0 6.7 5.4 2.8 13.3l7.9 6.1C12.5 13.2 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.9 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.9c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 6.9-10.1 6.9-17z"/><path fill="#FBBC05" d="M10.7 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.1.8-4.6l-7.9-6.1A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.5 10.8l8.2-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.2 1.5-5 2.4-8.4 2.4-6.2 0-11.5-3.7-13.3-9l-8.2 6.2C6.7 42.6 14.7 48 24 48z"/></svg>
+    Registrarse con Google
+  </button>
+</div></div>
+<script>function cs(v){const s=[document.getElementById('s1'),document.getElementById('s2'),document.getElementById('s3')];const l=document.getElementById('sl');s.forEach(x=>x.style.background='#1A2C20');if(v.length>=4){s[0].style.background='#FF4D5E';l.textContent='Débil';l.style.color='#FF4D5E'}if(v.length>=7){s[1].style.background='#FFD166';l.textContent='Media';l.style.color='#FFD166'}if(v.length>=10){s[2].style.background='#00D49E';l.textContent='Fuerte';l.style.color='#00D49E'}}</script>
+</body></html>

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/alainmijangos/Desktop/**)",
+      "Bash(npm install *)"
+    ]
+  }
+}

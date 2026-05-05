@@ -1,0 +1,124 @@
+<%- include('partials/header', {titulo:'Perfil', usuario}) %>
+
+<!-- CAJA DE INGRESO MENSUAL (destacada) -->
+<div class="income-card mb">
+  <div class="income-card-label">INGRESO MENSUAL ESTIMADO</div>
+  <div class="income-card-value">
+    $<span id="ingresoDisplay"><%=(parseFloat(datos.ingreso_mensual)||0).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+  </div>
+  <div class="income-card-sub">
+    <%if(datos.ingreso_mensual && parseFloat(datos.ingreso_mensual)>0){%>
+    Meta de ahorro (<%=datos.meta_ahorro||20%>%):
+    <strong style="color:var(--g)">
+      $<%=Math.round((parseFloat(datos.ingreso_mensual))*(parseFloat(datos.meta_ahorro||20)/100)).toLocaleString('es-MX')%> al mes
+    </strong>
+    <%}else{%>
+    Configura tu ingreso para calcular tu meta de ahorro
+    <%}%>
+  </div>
+</div>
+
+<div class="dg">
+  <!-- TARJETA PERFIL -->
+  <div class="card pc">
+    <div class="av-w"><div class="av">👤</div><div class="av-c">📷</div></div>
+    <div class="pn"><%=datos.nombre%> <%=datos.apellidos%></div>
+    <div class="pe"><%=datos.correo%></div>
+    <%if(datos.ciudad){%><div style="font-size:12px;color:var(--m)">📍 <%=datos.ciudad%></div><%}%>
+    <%if(datos.ocupacion){%><div style="font-size:12px;color:var(--m)">💼 <%=datos.ocupacion%></div><%}%>
+    <span class="badge <%=datos.plan==='premium'?'by':'bgr'%>"><%=datos.plan==='premium'?'⭐ Premium':'Plan Gratuito'%></span>
+    <a href="#" class="btn-p mt" style="width:100%;text-align:center">⬆ Mejorar a Premium</a>
+
+    <!-- Resumen de actividad -->
+    <div class="div-line" style="width:100%"></div>
+    <div style="width:100%;text-align:left">
+      <div class="ct" style="font-size:.85rem">📊 Resumen de actividad</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;font-size:12px">
+        <div style="background:var(--bg2);border:1px solid var(--b);border-radius:10px;padding:.7rem;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--w);font-size:1.1rem"><%=datos.meta_ahorro||20%>%</div>
+          <div class="muted" style="font-size:10px;margin-top:.15rem">Meta ahorro</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--b);border-radius:10px;padding:.7rem;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;color:var(--g);font-size:1.1rem">
+            $<%=datos.ingreso_mensual && parseFloat(datos.ingreso_mensual)>0 ? (parseFloat(datos.ingreso_mensual)/1000).toFixed(1)+'k' : '—'%>
+          </div>
+          <div class="muted" style="font-size:10px;margin-top:.15rem">Ingreso/mes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULARIO EDITAR -->
+  <div class="card c2">
+    <%if(ok){%><div class="a-ok"><%=ok%></div><%}%>
+    <%if(error){%><div class="a-err">⚠ <%=error%></div><%}%>
+
+    <div class="ct">✏️ Editar Perfil</div>
+    <form method="POST" action="/perfil/actualizar" class="fg2">
+      <div class="fg"><label>NOMBRE(S)</label><input type="text" name="nombre" value="<%=datos.nombre%>" required></div>
+      <div class="fg"><label>APELLIDOS</label><input type="text" name="apellidos" value="<%=datos.apellidos%>" required></div>
+      <div class="fg"><label>CIUDAD</label><input type="text" name="ciudad" value="<%=datos.ciudad||''%>" placeholder="Ej: Ciudad de México"></div>
+      <div class="fg"><label>OCUPACIÓN</label><input type="text" name="ocupacion" value="<%=datos.ocupacion||''%>" placeholder="Ej: Estudiante universitario"></div>
+
+      <!-- INGRESO MENSUAL DESTACADO -->
+      <div class="fg" style="grid-column:span 2">
+        <label>💰 INGRESO MENSUAL ESTIMADO ($)</label>
+        <input type="number" name="ingreso_mensual"
+               value="<%=parseFloat(datos.ingreso_mensual)||''%>"
+               placeholder="Ej: 15000.00"
+               step="0.01" min="0"
+               oninput="actualizarIngreso(this.value)"
+               style="font-size:15px;font-weight:700;border-color:var(--g)">
+        <small class="muted" style="font-size:11px;margin-top:.25rem">
+          Este dato te ayuda a calcular cuánto puedes ahorrar cada mes según tu meta.
+        </small>
+      </div>
+
+      <div class="fg"><label>META AHORRO (%)</label><input type="number" name="meta_ahorro" value="<%=datos.meta_ahorro||20%>" min="1" max="100" oninput="actualizarIngreso()"></div>
+
+      <div class="fg ae" style="grid-column:span 2"><button type="submit" class="btn-p">💾 Guardar Cambios</button></div>
+    </form>
+
+    <div class="div-line"></div>
+    <div class="ct">🔑 Cambiar Contraseña</div>
+    <form method="POST" action="/perfil/password" class="fg2">
+      <div class="fg"><label>CONTRASEÑA ACTUAL</label><input type="password" name="actual" required></div>
+      <div class="fg"><label>NUEVA CONTRASEÑA</label><input type="password" name="nueva" required minlength="6"></div>
+      <div class="fg"><label>CONFIRMAR NUEVA</label><input type="password" name="confirmar" required></div>
+      <div class="fg ae"><button type="submit" class="btn-g">🔐 Cambiar Contraseña</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+function actualizarIngreso(val) {
+  var ing = val !== undefined ? parseFloat(val) : parseFloat(document.querySelector('input[name=ingreso_mensual]').value) || 0;
+  var meta = parseFloat(document.querySelector('input[name=meta_ahorro]').value) || 20;
+  var ahorro = Math.round(ing * (meta / 100));
+  document.getElementById('ingresoDisplay').textContent = ing.toLocaleString('es-MX', {minimumFractionDigits:2});
+  var sub = document.querySelector('.income-card-sub strong');
+  if (sub && ing > 0) {
+    sub.textContent = '$' + ahorro.toLocaleString('es-MX') + ' al mes';
+  }
+}
+</script>
+<!-- ZONA DE PELIGRO -->
+<div class="card mt" style="border-color:rgba(229,57,53,.3)">
+  <div class="ct" style="color:var(--r)">⚠️ Zona de Peligro</div>
+  <p style="font-size:13px;color:var(--m);margin-bottom:1rem">Eliminar tu cuenta borrará permanentemente todos tus datos: movimientos, metas, presupuestos y categorías. Esta acción no se puede deshacer.</p>
+  <button class="btn-icon d" style="padding:.55rem 1.1rem;font-size:13px;border-radius:10px;background:rgba(229,57,53,.1);border:1px solid rgba(229,57,53,.35);color:var(--r);cursor:pointer" onclick="openModal('modalEliminar')">🗑 Eliminar mi cuenta</button>
+</div>
+
+<!-- MODAL ELIMINAR CUENTA -->
+<div class="modal" id="modalEliminar">
+  <div class="mbox" style="max-width:400px">
+    <div class="mh"><span style="color:var(--r)">⚠️ Eliminar Cuenta</span><button class="mcl" onclick="closeModal('modalEliminar')">✕</button></div>
+    <p style="font-size:13px;color:var(--t);margin-bottom:1.2rem">¿Estás seguro? Esta acción eliminará <strong>todos tus datos permanentemente</strong> y no se puede revertir.</p>
+    <form method="POST" action="/perfil/eliminar" style="display:flex;gap:.6rem">
+      <button type="submit" class="btn-r" style="flex:1">Sí, eliminar mi cuenta</button>
+      <button type="button" class="btn-g" onclick="closeModal('modalEliminar')">Cancelar</button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

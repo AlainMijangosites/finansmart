@@ -1,0 +1,29 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FINANSMART — Nueva Contraseña</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css"></head>
+<body class="auth-page"><div class="auth-wrap">
+<div class="auth-brand">
+  <div class="logo-wrap" style="margin-bottom:2.5rem">
+    <img src="/img/logo.png" width="44" height="44" alt="FINANSMART" style="border-radius:12px;flex-shrink:0">
+    FINAN<span class="green">SMART</span>
+  </div>
+  <h1>Crea una nueva <span class="green">contraseña</span> segura.</h1>
+</div>
+<div class="auth-card">
+  <div class="ch">
+    <div class="logo-wrap">
+      <img src="/img/logo.png" width="32" height="32" alt="FINANSMART" style="border-radius:9px;flex-shrink:0">
+      FINANSMART
+    </div>
+  </div>
+  <h2>Nueva contraseña</h2>
+  <p class="auth-sub">Elige una contraseña de al menos 6 caracteres</p>
+  <%if(error){%><div class="a-err">⚠ <%=error%></div><%}%>
+  <form method="POST" action="/reset/<%=token%>">
+    <div class="fg"><label>NUEVA CONTRASEÑA</label><input type="password" name="nueva" placeholder="Mín. 6 caracteres" required minlength="6"></div>
+    <div class="fg"><label>CONFIRMAR CONTRASEÑA</label><input type="password" name="confirmar" placeholder="Repetir contraseña" required></div>
+    <button type="submit" class="btn-p full" style="margin-top:.5rem">Cambiar contraseña</button>
+  </form>
+</div></div>
+</body></html>

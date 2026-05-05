@@ -1,0 +1,103 @@
+<%- include('partials/header', {titulo:'Alertas', usuario}) %>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">🔔 Centro de Alertas</div>
+    <div class="page-sub">Monitoreo de límites de presupuesto · <%=new Date(anio,mes-1).toLocaleDateString('es-MX',{month:'long',year:'numeric'})%></div>
+  </div>
+  <a href="/presupuesto" class="btn-p sm">⚙ Gestionar Presupuesto</a>
+</div>
+
+<%
+const excedidas = alertas.filter(a=>parseFloat(a.gastado)>=parseFloat(a.limite_monto));
+const enAlerta  = alertas.filter(a=>parseFloat(a.gastado)/parseFloat(a.limite_monto)>=0.8 && parseFloat(a.gastado)<parseFloat(a.limite_monto));
+const normales  = alertas.filter(a=>parseFloat(a.gastado)/parseFloat(a.limite_monto)<0.8);
+%>
+
+<!-- RESUMEN -->
+<div class="sg g3" style="margin-bottom:1.4rem">
+  <div class="sc" style="border-color:rgba(255,77,94,.3)">
+    <div class="sc-l">EXCEDIDAS</div>
+    <div class="sc-v red"><%=excedidas.length%></div>
+    <div class="sc-s">Categorías sobre el límite</div>
+    <span class="sc-i">⛔</span>
+  </div>
+  <div class="sc" style="border-color:rgba(255,209,102,.3)">
+    <div class="sc-l">EN ALERTA</div>
+    <div class="sc-v yellow"><%=enAlerta.length%></div>
+    <div class="sc-s">Mayores al 80% del límite</div>
+    <span class="sc-i">⚠</span>
+  </div>
+  <div class="sc" style="border-color:rgba(0,212,158,.2)">
+    <div class="sc-l">EN ORDEN</div>
+    <div class="sc-v green"><%=normales.length%></div>
+    <div class="sc-s">Dentro del presupuesto</div>
+    <span class="sc-i">✅</span>
+  </div>
+</div>
+
+<%if(alertas.length===0){%>
+<div class="card" style="text-align:center;padding:3rem">
+  <div style="font-size:3rem;margin-bottom:1rem">✅</div>
+  <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--w);margin-bottom:.5rem">Sin alertas activas</div>
+  <p class="muted" style="margin-bottom:1.2rem;font-size:13px">Configura límites de presupuesto para empezar a recibir alertas.</p>
+  <a href="/presupuesto" class="btn-p sm">Configurar presupuesto →</a>
+</div>
+<%}else{%>
+
+<%if(excedidas.length>0){%>
+<div class="card mb">
+  <div class="ct" style="color:var(--r)">⛔ Categorías Excedidas (<%=excedidas.length%>)</div>
+  <%excedidas.forEach(a=>{const pct=Math.round((a.gastado/a.limite_monto)*100);%>
+  <div class="ai ad" style="margin-bottom:.6rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+      <span><strong><%=a.icono%> <%=a.nombre%></strong></span>
+      <span class="red bold">⛔ <%=pct%>%</span>
+    </div>
+    <div class="mb2"><div style="width:100%;background:#FF4D5E"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:.3rem">
+      <span class="muted">$<%=parseFloat(a.gastado).toLocaleString('es-MX',{minimumFractionDigits:2})%> / $<%=parseFloat(a.limite_monto).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+      <span class="red">Excediste $<%=(parseFloat(a.gastado)-parseFloat(a.limite_monto)).toLocaleString('es-MX',{minimumFractionDigits:2})%> extra</span>
+    </div>
+  </div>
+  <%})%>
+</div>
+<%}%>
+
+<%if(enAlerta.length>0){%>
+<div class="card mb">
+  <div class="ct" style="color:var(--y)">⚠ En Alerta (<%=enAlerta.length%>)</div>
+  <%enAlerta.forEach(a=>{const pct=Math.round((a.gastado/a.limite_monto)*100);%>
+  <div class="ai aw" style="margin-bottom:.6rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+      <span><strong><%=a.icono%> <%=a.nombre%></strong></span>
+      <span class="yellow bold">⚠ <%=pct%>%</span>
+    </div>
+    <div class="mb2"><div style="width:<%=pct%>%;background:#FFD166"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:.3rem">
+      <span class="muted">$<%=parseFloat(a.gastado).toLocaleString('es-MX',{minimumFractionDigits:2})%> / $<%=parseFloat(a.limite_monto).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+      <span class="yellow">Solo $<%=(parseFloat(a.limite_monto)-parseFloat(a.gastado)).toLocaleString('es-MX',{minimumFractionDigits:2})%> restantes</span>
+    </div>
+  </div>
+  <%})%>
+</div>
+<%}%>
+
+<%if(normales.length>0){%>
+<div class="card">
+  <div class="ct">✅ Dentro del presupuesto (<%=normales.length%>)</div>
+  <%normales.forEach(a=>{const pct=parseFloat(a.limite_monto)>0?Math.round((a.gastado/a.limite_monto)*100):0;%>
+  <div class="ai aok" style="margin-bottom:.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
+      <span><%=a.icono%> <strong><%=a.nombre%></strong></span>
+      <span class="green bold"><%=pct%>%</span>
+    </div>
+    <div class="mb2"><div style="width:<%=pct%>%;background:#00D49E"></div></div>
+    <div style="font-size:11px;color:var(--m);margin-top:.2rem">$<%=parseFloat(a.gastado).toLocaleString('es-MX',{minimumFractionDigits:2})%> de $<%=parseFloat(a.limite_monto).toLocaleString('es-MX',{minimumFractionDigits:2})%> · Bien dentro del límite</div>
+  </div>
+  <%})%>
+</div>
+<%}%>
+<%}%>
+
+<%- include('partials/footer') %>

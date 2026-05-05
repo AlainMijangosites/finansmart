@@ -1,0 +1,43 @@
+<%- include('partials/header', {titulo:'Reportes', usuario}) %>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">📊 Reportes Financieros</div>
+    <div class="page-sub">Análisis de tus finanzas del año</div>
+  </div>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+    <a href="/exportar/pdf" class="btn-r sm">📄 Exportar PDF</a>
+    <a href="/exportar/excel" class="btn-p sm">📊 Exportar Excel</a>
+  </div>
+</div>
+
+<div class="sg g3">
+  <div class="sc"><div class="sc-l">INGRESOS <%=anio%></div><div class="sc-v green">$<%=parseFloat(totales.ing).toLocaleString('es-MX',{minimumFractionDigits:2})%></div></div>
+  <div class="sc"><div class="sc-l">EGRESOS <%=anio%></div><div class="sc-v red">$<%=parseFloat(totales.eg).toLocaleString('es-MX',{minimumFractionDigits:2})%></div></div>
+  <div class="sc"><div class="sc-l">BALANCE <%=anio%></div><div class="sc-v <%=(totales.ing-totales.eg)>=0?'green':'red'%>">$<%=(totales.ing-totales.eg).toLocaleString('es-MX',{minimumFractionDigits:2})%></div></div>
+</div>
+<div class="dg">
+  <div class="card c2 mb">
+    <div class="ct">📊 Evolución Mensual <%=anio%></div>
+    <canvas id="barChart" height="120"></canvas>
+  </div>
+  <div class="card c2">
+    <div class="ct">📋 Distribución de Gastos</div>
+    <%if(porCat.length===0){%><p class="empty">Sin egresos registrados</p><%}else{const tot=porCat.reduce((a,c)=>a+parseFloat(c.total),0);const colors=['#00D49E','#FFD166','#FF4D5E','#7C6FFF','#4D9EFF','#00A87E','#FF6B6B','#A29BFE'];porCat.forEach((c,i)=>{const pct=tot>0?Math.round((c.total/tot)*100):0;%>
+    <div style="margin-bottom:.9rem">
+      <div style="display:flex;justify-content:space-between;margin-bottom:.3rem"><span><%=c.icono%> <%=c.nombre%></span><span class="bold white"><%=pct%>% · $<%=parseFloat(c.total).toLocaleString('es-MX',{minimumFractionDigits:2})%></span></div>
+      <div style="height:8px;background:var(--b);border-radius:4px"><div style="height:100%;width:<%=pct%>%;background:<%=colors[i%colors.length]%>;border-radius:4px;transition:width .5s"></div></div>
+    </div><%})}%>
+  </div>
+</div>
+<script>
+const ingA=new Array(12).fill(0),egA=new Array(12).fill(0);
+<%porMes.forEach(r=>{%>ingA[<%=r.mes-1%>]=<%=r.ing%>;egA[<%=r.mes-1%>]=<%=r.eg%>;<%})%>
+new Chart(document.getElementById('barChart').getContext('2d'),{
+  type:'bar',
+  data:{labels:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],
+  datasets:[{label:'Ingresos',data:ingA,backgroundColor:'#00D49E60',borderColor:'#00D49E',borderWidth:2,borderRadius:6},{label:'Egresos',data:egA,backgroundColor:'#FF4D5E60',borderColor:'#FF4D5E',borderWidth:2,borderRadius:6}]},
+  options:{plugins:{legend:{labels:{color:'#5E7A9A'}}},scales:{x:{ticks:{color:'#5E7A9A'},grid:{color:'#D0DCE8'}},y:{ticks:{color:'#5E7A9A',callback:v=>'$'+v.toLocaleString('es-MX')},grid:{color:'#D0DCE8'}}}}
+});
+</script>
+<%- include('partials/footer') %>

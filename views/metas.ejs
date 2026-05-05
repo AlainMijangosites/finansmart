@@ -1,0 +1,155 @@
+<%- include('partials/header', {titulo:'Metas', usuario}) %>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">⭐ Metas de Ahorro</div>
+    <div class="page-sub">Visualiza y alcanza tus sueños financieros</div>
+  </div>
+  <button class="btn-p sm" onclick="openModal('modalNueva')">+ Nueva Meta</button>
+</div>
+
+<%if(ok){%><div class="a-ok" style="margin-bottom:1rem"><%=ok%></div><%}%>
+<%if(error){%><div class="a-err" style="margin-bottom:1rem">⚠ <%=error%></div><%}%>
+
+<div class="sg g4" style="margin-bottom:1.4rem">
+  <div class="sc gc">
+    <div class="sc-l">AHORRO TOTAL</div>
+    <div class="sc-v">$<%=parseFloat(totalAhorro).toLocaleString('es-MX',{minimumFractionDigits:2})%></div>
+    <div class="sc-s">En metas activas</div>
+    <span class="sc-i">💰</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">METAS ACTIVAS</div>
+    <div class="sc-v white"><%=activas%></div>
+    <div class="sc-s">En curso</div>
+    <span class="sc-i">🎯</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">COMPLETADAS</div>
+    <div class="sc-v green"><%=completadas%></div>
+    <div class="sc-s">Logradas</div>
+    <span class="sc-i">✅</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">TOTAL METAS</div>
+    <div class="sc-v white"><%=metas.length%></div>
+    <div class="sc-s">Registradas</div>
+    <span class="sc-i">📋</span>
+  </div>
+</div>
+
+<%if(metas.length===0){%>
+<div class="card" style="text-align:center;padding:3.5rem">
+  <div style="font-size:3.5rem;margin-bottom:1rem">⭐</div>
+  <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--w);margin-bottom:.5rem">Sin metas de ahorro</div>
+  <p class="muted" style="font-size:13px;margin-bottom:1.5rem">Crea tu primera meta y empieza a ahorrar hacia tus sueños.</p>
+  <button class="btn-p" onclick="openModal('modalNueva')">+ Crear primera meta</button>
+</div>
+<%}else{%>
+<div class="meta-grid">
+  <%metas.forEach(function(meta){
+    var montoMeta = parseFloat(meta.monto_meta) || 0;
+    var montoActual = parseFloat(meta.monto_actual) || 0;
+    var pct = montoMeta > 0 ? Math.min(Math.round((montoActual / montoMeta) * 100), 100) : 0;
+    var col = meta.estado==='completada' ? '#00D49E' : meta.estado==='pausada' ? '#6A9E88' : '#00D49E';
+    var clsCard = meta.estado==='completada' ? 'done' : meta.estado==='pausada' ? 'paused' : '';
+  %>
+  <div class="meta-card <%=clsCard%>">
+    <div class="meta-top">
+      <div>
+        <div class="meta-name"><%=meta.icono||'⭐'%> <%=meta.nombre%></div>
+        <%if(meta.fecha_limite){%>
+        <div class="meta-date">Meta: <%=new Date(meta.fecha_limite).toLocaleDateString('es-MX',{month:'long',year:'numeric'})%></div>
+        <%}%>
+      </div>
+      <span class="badge <%=meta.estado==='completada'?'bg':meta.estado==='pausada'?'bgr':'by'%>">
+        <%=meta.estado==='completada'?'✓ Completada':meta.estado==='pausada'?'⏸ Pausada':'En progreso'%>
+      </span>
+    </div>
+
+    <div class="meta-prog-nums">
+      <span class="meta-amount">$<%=montoActual.toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+      <span class="meta-target">de $<%=montoMeta.toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+    </div>
+    <div class="mprog"><div style="width:<%=pct%>%;background:<%=col%>"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:.25rem">
+      <span style="color:<%=col%>;font-weight:700"><%=pct%>% completado</span>
+      <%if(meta.estado!=='completada'){%>
+      <span class="muted">Faltan $<%=(montoMeta-montoActual).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+      <%}else{%><span class="green">¡Meta alcanzada! 🎉</span><%}%>
+    </div>
+
+    <div class="meta-actions">
+      <%if(meta.estado!=='completada'){%>
+      <button class="btn-p sm" onclick="abrirAbonar(<%=meta.id%>)">+ Abonar</button>
+      <form method="POST" action="/metas/pausar/<%=meta.id%>" style="display:inline">
+        <button type="submit" class="btn-g sm"><%=meta.estado==='pausada'?'▶ Reactivar':'⏸ Pausar'%></button>
+      </form>
+      <%}%>
+      <form method="POST" action="/metas/eliminar/<%=meta.id%>" style="display:inline" onsubmit="return confirm('Eliminar esta meta?')">
+        <button type="submit" class="btn-icon d" title="Eliminar">🗑</button>
+      </form>
+    </div>
+  </div>
+  <%})%>
+
+  <div class="meta-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;cursor:pointer;border-style:dashed;opacity:.7" onclick="openModal('modalNueva')">
+    <div style="font-size:2rem;margin-bottom:.5rem;color:var(--dk)">+</div>
+    <div style="font-size:13px;color:var(--m)">Crear nueva meta</div>
+  </div>
+</div>
+<%}%>
+
+<div class="card mt">
+  <div class="ct">💡 Consejos para ahorrar más rápido</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.6rem">
+    <%[['✦','Aparta el 10% apenas recibes tu sueldo'],['✦','Activa abonos regulares a tus metas'],['✦','Reduce 1 gasto hormiga por semana'],['✦','Usa el método 50/30/20'],['✦','Revisa tu progreso cada domingo']].forEach(function(tip){%>
+    <div style="display:flex;align-items:flex-start;gap:.6rem;font-size:13px;color:var(--t);background:var(--bg2);border:1px solid var(--b);border-radius:10px;padding:.7rem .9rem">
+      <span style="color:var(--g);font-weight:800;flex-shrink:0"><%=tip[0]%></span><span><%=tip[1]%></span>
+    </div>
+    <%})%>
+  </div>
+  <div style="margin-top:1rem"><a href="/educacion" class="btn-g sm">🎓 Ver curso de ahorro →</a></div>
+</div>
+
+<!-- MODAL NUEVA META -->
+<div class="modal" id="modalNueva">
+  <div class="mbox" style="max-width:460px">
+    <div class="mh"><span>⭐ Nueva Meta de Ahorro</span><button class="mcl" onclick="closeModal('modalNueva')">✕</button></div>
+    <form method="POST" action="/metas/agregar" class="fg2" style="grid-template-columns:1fr">
+      <div class="fg"><label>NOMBRE DE LA META</label><input type="text" name="nombre" placeholder="Ej: Laptop, Viaje a Cancún" required></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="fg"><label>ICONO (emoji)</label><input type="text" name="icono" placeholder="💻" maxlength="4"></div>
+        <div class="fg"><label>MONTO OBJETIVO ($)</label><input type="number" name="monto_objetivo" step="0.01" placeholder="0.00" min="1" required></div>
+      </div>
+      <div class="fg"><label>FECHA LÍMITE (opcional)</label><input type="date" name="fecha_limite"></div>
+      <div style="display:flex;gap:.6rem;margin-top:.4rem">
+        <button type="submit" class="btn-p" style="flex:1">✅ Crear Meta</button>
+        <button type="button" class="btn-g" onclick="closeModal('modalNueva')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL ABONAR -->
+<div class="modal" id="modalAbonar">
+  <div class="mbox" style="max-width:380px">
+    <div class="mh"><span>+ Registrar Abono</span><button class="mcl" onclick="closeModal('modalAbonar')">✕</button></div>
+    <form method="POST" id="formAbonar" class="fg2" style="grid-template-columns:1fr">
+      <div class="fg"><label>MONTO A ABONAR ($)</label><input type="number" name="monto" id="montoAbonar" step="0.01" placeholder="0.00" required min="0.01"></div>
+      <div style="display:flex;gap:.6rem">
+        <button type="submit" class="btn-p" style="flex:1">💰 Abonar</button>
+        <button type="button" class="btn-g" onclick="closeModal('modalAbonar')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function abrirAbonar(id) {
+  document.getElementById('formAbonar').action = '/metas/abonar/' + id;
+  document.getElementById('montoAbonar').value = '';
+  openModal('modalAbonar');
+}
+</script>
+<%- include('partials/footer') %>

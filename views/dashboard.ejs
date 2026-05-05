@@ -1,0 +1,197 @@
+<%- include('partials/header', {titulo:'Dashboard', usuario}) %>
+
+<!-- STAT CARDS -->
+<div class="sg">
+  <div class="sc gc">
+    <div class="sc-l">BALANCE ACTUAL</div>
+    <div class="sc-v">$<%=parseFloat(balance).toLocaleString('es-MX',{minimumFractionDigits:2})%></div>
+    <div class="sc-s"><%=balance>=0?'↑ Positivo este mes':'↓ Negativo este mes'%></div>
+    <span class="sc-i">💰</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">INGRESOS</div>
+    <div class="sc-v green">$<%=parseFloat(ing).toLocaleString('es-MX',{minimumFractionDigits:2})%></div>
+    <div class="sc-s">Mes actual</div>
+    <span class="sc-i">📈</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">EGRESOS</div>
+    <div class="sc-v red">$<%=parseFloat(eg).toLocaleString('es-MX',{minimumFractionDigits:2})%></div>
+    <div class="sc-s">Mes actual</div>
+    <span class="sc-i">📉</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">META DE AHORRO</div>
+    <div class="sc-v <%=tasaAhorro>=metaAhorro?'green':'yellow'%>"><%=tasaAhorro%>%</div>
+    <div class="sc-s">Meta: <%=metaAhorro%>% <%=tasaAhorro>=metaAhorro?'✓ Superada':'Por alcanzar'%></div>
+    <span class="sc-i">🎯</span>
+    <div class="sc-prog"><div class="sc-prog-bar"><div style="width:<%=Math.min(tasaAhorro,100)%>%;background:<%=tasaAhorro>=metaAhorro?'#00D49E':'#FFD166'%>"></div></div></div>
+  </div>
+  <div class="sc">
+    <div class="sc-l">ALERTAS</div>
+    <div class="sc-v <%=alertas.length>0?'yellow':'green'%>"><%=alertas.length%></div>
+    <div class="sc-s"><%=alertas.length===0?'Todo en orden':'Categorías al límite'%></div>
+    <span class="sc-i">🔔</span>
+  </div>
+</div>
+
+<div class="dg">
+  <!-- FLUJO MENSUAL (bar chart) -->
+  <div class="card c2 mb">
+    <div class="ctr">
+      <span class="ct">📊 Flujo Mensual — Ingresos vs Egresos</span>
+      <a href="/reportes" class="btn-g sm">Ver reportes →</a>
+    </div>
+    <canvas id="barChart" height="100"></canvas>
+  </div>
+
+  <!-- AGREGAR MOVIMIENTO RÁPIDO -->
+  <div class="card mb">
+    <div class="ct">➕ Agregar Movimiento Rápido</div>
+    <form method="POST" action="/movimientos/agregar">
+      <div class="fg"><label>Tipo</label><select name="tipo"><option value="egreso">💸 Egreso</option><option value="ingreso">💰 Ingreso</option></select></div>
+      <div class="fg"><label>Concepto</label><input type="text" name="concepto" placeholder="Ej: Supermercado" required></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="fg"><label>Monto ($)</label><input type="number" name="monto" placeholder="0.00" step="0.01" required></div>
+        <div class="fg"><label>Fecha</label><input type="date" name="fecha" value="<%=new Date().toISOString().split('T')[0]%>" required></div>
+      </div>
+      <div class="fg"><label>Categoría</label>
+        <select name="categoria_id"><option value="">Sin categoría</option>
+          <%porCat.forEach(c=>{%><option value="<%=c.id%>"><%=c.icono%> <%=c.nombre%></option><%})%>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.4rem">
+        <button type="submit" name="_tipo" value="egreso" class="btn-r" onclick="this.form.tipo.value='egreso'">+ Egreso</button>
+        <button type="submit" name="_tipo" value="ingreso" class="btn-p" onclick="this.form.tipo.value='ingreso'">+ Ingreso</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- GASTOS POR CATEGORÍA -->
+  <div class="card mb">
+    <div class="ct">🍩 Gastos por Categoría</div>
+    <%if(porCat.length>0){
+      const totalCat=porCat.reduce((a,c)=>a+parseFloat(c.total),0);
+      const colores=['#00D49E','#FFD166','#FF4D5E','#7C6FFF','#4D9EFF','#FF9F40'];
+      porCat.forEach((c,i)=>{
+        const pct=totalCat>0?Math.round((c.total/totalCat)*100):0;
+    %>
+    <div class="prog-row">
+      <span class="prog-label"><%=c.icono%> <%=c.nombre%></span>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:<%=pct%>%;background:<%=colores[i%colores.length]%>"></div></div>
+      <span class="prog-pct"><%=pct%>%</span>
+    </div>
+    <%})}else{%><p class="empty">Sin egresos este mes</p><%}%>
+    <%if(porCat.length>0){%>
+    <div style="margin-top:1rem;text-align:center">
+      <canvas id="dChart" height="180"></canvas>
+    </div>
+    <%}%>
+  </div>
+
+  <!-- MOVIMIENTOS RECIENTES -->
+  <div class="card c2 mb">
+    <div class="ctr"><span class="ct">📋 Movimientos Recientes</span><a href="/movimientos" class="btn-g sm">Ver todos →</a></div>
+    <%if(ultimos.length===0){%><p class="empty">Sin movimientos aún</p><%}else{%>
+    <div class="tw"><table class="tbl">
+      <thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Tipo</th><th>Monto</th></tr></thead>
+      <tbody><%ultimos.forEach(m=>{%><tr>
+        <td class="muted"><%=new Date(m.fecha).toLocaleDateString('es-MX')%></td>
+        <td><strong style="color:var(--w)"><%=m.concepto%></strong></td>
+        <td><%=m.cat_icono||''%> <span class="muted"><%=m.cat_nombre||'—'%></span></td>
+        <td><span class="badge <%=m.tipo==='ingreso'?'bg':'br'%>"><%=m.tipo%></span></td>
+        <td class="<%=m.tipo==='ingreso'?'green':'red'%> bold"><%=m.tipo==='ingreso'?'+':'-'%>$<%=parseFloat(m.monto).toLocaleString('es-MX',{minimumFractionDigits:2})%></td>
+      </tr><%})%></tbody>
+    </table></div><%}%>
+  </div>
+
+  <!-- RECOMENDACIONES AUTOMÁTICAS -->
+  <div class="card mb">
+    <div class="ct">💡 Recomendaciones para ti</div>
+    <%recomendaciones.forEach(function(r){%>
+    <div style="display:flex;align-items:flex-start;gap:.7rem;padding:.65rem .8rem;background:var(--bg2);border:1px solid var(--b);border-radius:10px;margin-bottom:.5rem;font-size:13px;color:var(--t)">
+      <span style="font-size:1.1rem;flex-shrink:0"><%=r.icon%></span>
+      <span><%=r.texto%></span>
+    </div>
+    <%})%>
+  </div>
+
+  <!-- ALERTAS ACTIVAS -->
+  <div class="card">
+    <div class="ctr"><span class="ct">🔔 Alertas Recientes</span><a href="/alertas" class="btn-g sm">Ver todas →</a></div>
+    <%if(alertas.length===0){%>
+    <div class="ai aok">✅ Todo dentro del presupuesto este mes</div>
+    <%}else{alertas.forEach(a=>{const pct=Math.round((a.gastado/a.limite_monto)*100);%>
+    <div class="ai <%=pct>=100?'ad':'aw'%>">
+      <div style="display:flex;justify-content:space-between;margin-bottom:.3rem">
+        <span><%=a.icono%> <strong><%=a.nombre%></strong></span>
+        <span class="<%=pct>=100?'red':'yellow'%> bold"><%=pct>=100?'⛔':'⚠'%> <%=pct%>%</span>
+      </div>
+      <div class="mb2"><div style="width:<%=Math.min(pct,100)%>%;background:<%=pct>=100?'#FF4D5E':'#FFD166'%>"></div></div>
+      <small class="muted">$<%=parseFloat(a.gastado).toLocaleString('es-MX',{minimumFractionDigits:2})%> de $<%=parseFloat(a.limite_monto).toLocaleString('es-MX',{minimumFractionDigits:2})%></small>
+    </div><%})%><%}%>
+  </div>
+
+  <!-- META PRINCIPAL -->
+  <div class="card">
+    <div class="ct">⭐ Meta de Ahorro Activa</div>
+    <%if(!metaPrincipal){%>
+    <p class="empty">Sin metas activas</p>
+    <a href="/metas" class="btn-p sm" style="width:100%;margin-top:.8rem;justify-content:center">+ Nueva Meta</a>
+    <%}else{
+      const pct=metaPrincipal.monto_meta>0?Math.min(Math.round((metaPrincipal.monto_actual/metaPrincipal.monto_meta)*100),100):0;
+    %>
+    <div style="margin-bottom:.6rem">
+      <div style="font-weight:700;color:var(--w);font-size:15px;margin-bottom:.2rem"><%=metaPrincipal.icono||'⭐'%> <%=metaPrincipal.nombre%></div>
+      <%if(metaPrincipal.fecha_limite){%><div class="muted" style="font-size:11px;margin-bottom:.6rem">Meta: <%=new Date(metaPrincipal.fecha_limite).toLocaleDateString('es-MX',{month:'long',year:'numeric'})%></div><%}%>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem">
+        <span style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--w)">$<%=parseFloat(metaPrincipal.monto_actual||0).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+        <span class="muted" style="font-size:12px">de $<%=parseFloat(metaPrincipal.monto_meta||0).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+      </div>
+      <div class="mprog"><div style="width:<%=pct%>%;background:var(--g)"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:.3rem">
+        <span class="green bold"><%=pct%>% completado</span>
+        <span class="muted">Faltan $<%=parseFloat((metaPrincipal.monto_meta||0)-(metaPrincipal.monto_actual||0)).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+      </div>
+    </div>
+    <a href="/metas" class="btn-g sm" style="width:100%;justify-content:center">Ver todas las metas →</a>
+    <%}%>
+  </div>
+</div>
+
+<script>
+// Bar chart — flujo mensual
+const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const flowData=<%- JSON.stringify(porMes) %>;
+const ingArr=new Array(12).fill(0), egArr=new Array(12).fill(0);
+flowData.forEach(r=>{ ingArr[r.mes-1]=parseFloat(r.ing); egArr[r.mes-1]=parseFloat(r.eg); });
+const hoy=new Date().getMonth();
+const labelsBar=meses.slice(Math.max(0,hoy-6),hoy+1);
+const ingBar=ingArr.slice(Math.max(0,hoy-6),hoy+1);
+const egBar=egArr.slice(Math.max(0,hoy-6),hoy+1);
+new Chart(document.getElementById('barChart').getContext('2d'),{
+  type:'bar',
+  data:{labels:labelsBar,datasets:[
+    {label:'Ingresos',data:ingBar,backgroundColor:'#00D49E50',borderColor:'#00D49E',borderWidth:2,borderRadius:6},
+    {label:'Egresos', data:egBar, backgroundColor:'#FF4D5E50',borderColor:'#FF4D5E',borderWidth:2,borderRadius:6}
+  ]},
+  options:{responsive:true,plugins:{legend:{labels:{color:'#5E7A9A',font:{size:11}}}},
+    scales:{x:{ticks:{color:'#5E7A9A'},grid:{color:'#D0DCE8'}},
+            y:{ticks:{color:'#5E7A9A',callback:v=>'$'+v.toLocaleString('es-MX')},grid:{color:'#D0DCE8'}}}}
+});
+
+// Doughnut chart — categorías
+<%if(porCat.length>0){%>
+new Chart(document.getElementById('dChart').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels:[<%porCat.forEach((c,i)=>{%>'<%=c.icono%> <%=c.nombre%>'<%=i<porCat.length-1?',':''%><%})%>],
+    datasets:[{data:[<%porCat.forEach((c,i)=>{%><%=c.total%><%=i<porCat.length-1?',':''%><%})%>],
+      backgroundColor:['#00D49E','#FFD166','#FF4D5E','#7C6FFF','#4D9EFF','#FF9F40'],
+      borderColor:'#111A14',borderWidth:3}]
+  },
+  options:{plugins:{legend:{labels:{color:'#5E7A9A',font:{size:11}}}},cutout:'65%',animation:{duration:600}}
+});
+<%}%>
+</script>
+<%- include('partials/footer') %>

@@ -1,0 +1,73 @@
+<%- include('partials/header', {titulo:'Educación', usuario}) %>
+
+<div style="max-width:760px;margin:0 auto">
+
+  <!-- BREADCRUMB -->
+  <div style="display:flex;align-items:center;gap:.5rem;font-size:12px;color:var(--m);margin-bottom:1.2rem">
+    <a href="/educacion" style="color:var(--g)">🎓 Educación</a>
+    <span>›</span>
+    <span><%=art.categoria%></span>
+    <span>›</span>
+    <span style="color:var(--t)">Artículo</span>
+  </div>
+
+  <div class="card">
+    <!-- CABECERA -->
+    <div style="display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.2rem">
+      <div style="width:56px;height:56px;background:var(--bg2);border:1px solid var(--b);border-radius:14px;display:grid;place-items:center;font-size:1.8rem;flex-shrink:0"><%=art.icono%></div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.1em;margin-bottom:.35rem"><%=art.categoria.toUpperCase()%></div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:800;color:var(--w);line-height:1.25;margin-bottom:.5rem"><%=art.titulo%></h1>
+        <div class="article-meta-bar">
+          <span>📖 <%=art.tiempo%> de lectura</span>
+          <span>·</span>
+          <span>FINANSMART · Educación Financiera</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- CONTENIDO -->
+    <div class="article-body">
+      <%art.contenido.forEach(function(bloque){%>
+        <%if(bloque.tipo==='intro'){%>
+          <p style="font-size:15px;color:var(--w);font-weight:500;line-height:1.7;margin-bottom:1.2rem;border-left:3px solid var(--g);padding-left:1rem"><%=bloque.texto%></p>
+        <%}else if(bloque.tipo==='h3'){%>
+          <h3><%=bloque.texto%></h3>
+        <%}else if(bloque.tipo==='p'){%>
+          <p><%=bloque.texto%></p>
+        <%}else if(bloque.tipo==='tip'){%>
+          <div class="tip-box"><strong><%=bloque.texto.split(' ')[0]%></strong> <%=bloque.texto.split(' ').slice(1).join(' ')%></div>
+        <%}%>
+      <%})%>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- ACCIONES -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem">
+      <a href="/educacion" class="btn-g sm">← Volver a Educación</a>
+      <div style="display:flex;gap:.6rem">
+        <a href="/metas" class="btn-p sm">⭐ Crear una meta</a>
+        <a href="/presupuesto" class="btn-g sm">🎯 Ir a Presupuesto</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTÍCULOS RELACIONADOS -->
+  <div style="margin-top:1.2rem">
+    <div class="ct" style="margin-bottom:.8rem">📚 Más artículos</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem">
+      <%Object.keys(articulos).filter(function(s){return s!==slug;}).slice(0,3).forEach(function(s){var a=articulos[s];%>
+      <a href="/educacion/articulo/<%=s%>" style="display:block;background:var(--s);border:1px solid var(--b);border-radius:12px;padding:1rem;transition:all .2s" onmouseover="this.style.borderColor='var(--g)'" onmouseout="this.style.borderColor='var(--b)'">
+        <div style="font-size:1.4rem;margin-bottom:.5rem"><%=a.icono%></div>
+        <div style="font-size:12px;font-weight:700;color:var(--w);line-height:1.3;margin-bottom:.3rem"><%=a.titulo%></div>
+        <div style="font-size:11px;color:var(--m)"><%=a.tiempo%> · <%=a.categoria%></div>
+      </a>
+      <%})%>
+    </div>
+  </div>
+
+</div>
+<%- include('partials/footer') %>

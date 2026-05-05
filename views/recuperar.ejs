@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FINANSMART — Recuperar Contraseña</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css"></head>
+<body class="auth-page"><div class="auth-wrap">
+<div class="auth-brand">
+  <div class="logo-wrap" style="margin-bottom:2.5rem">
+    <img src="/img/logo.png" width="44" height="44" alt="FINANSMART" style="border-radius:12px;flex-shrink:0">
+    FINAN<span class="green">SMART</span>
+  </div>
+  <h1>Recupera el <span class="green">acceso</span><br>a tu cuenta.</h1>
+  <p>Te enviaremos un enlace para restablecer tu contraseña.</p>
+</div>
+<div class="auth-card">
+  <div class="ch">
+    <div class="logo-wrap">
+      <img src="/img/logo.png" width="32" height="32" alt="FINANSMART" style="border-radius:9px;flex-shrink:0">
+      FINANSMART
+    </div>
+    <span class="link-r"><strong onclick="location='/login'">← Volver al login</strong></span>
+  </div>
+  <h2>Recuperar contraseña</h2>
+  <p class="auth-sub">Ingresa tu correo registrado</p>
+  <%if(ok){%><div class="a-ok" style="margin-bottom:1rem"><%=ok%></div><%}%>
+  <%if(error){%><div class="a-err">⚠ <%=error%></div><%}%>
+  <form method="POST" action="/recuperar">
+    <div class="fg"><label>CORREO ELECTRÓNICO</label><input type="email" name="correo" placeholder="usuario@ejemplo.com" required></div>
+    <button type="submit" class="btn-p full" style="margin-top:.5rem">Enviar enlace de recuperación</button>
+  </form>
+</div></div>
+</body></html>

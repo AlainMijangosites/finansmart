@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FINANSMART — <%= titulo %></title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="app">
+<div class="layout">
+<aside class="sidebar">
+  <div class="sb-logo">
+    <img src="/img/logo.png" width="36" height="36" alt="FINANSMART" style="border-radius:10px;flex-shrink:0">
+    <span>FINAN<span class="green">SMART</span></span>
+  </div>
+  <nav class="sb-nav">
+    <span class="ns">MENÚ PRINCIPAL</span>
+    <a href="/dashboard"    class="ni <%=titulo==='Dashboard'     ?'act':''%>"><span class="ni-l"><i>🏠</i> Dashboard</span></a>
+    <a href="/movimientos?tipo=ingreso" class="ni <%=titulo==='Ingresos'?'act':''%>"><span class="ni-l"><i>📈</i> Ingresos</span></a>
+    <a href="/movimientos?tipo=egreso"  class="ni <%=titulo==='Egresos' ?'act':''%>"><span class="ni-l"><i>📉</i> Egresos</span></a>
+    <a href="/reportes"     class="ni <%=titulo==='Reportes'      ?'act':''%>"><span class="ni-l"><i>📊</i> Reportes</span></a>
+    <a href="/presupuesto"  class="ni <%=titulo==='Presupuesto'   ?'act':''%>"><span class="ni-l"><i>🎯</i> Presupuesto</span></a>
+    <a href="/alertas"      class="ni <%=titulo==='Alertas'       ?'act':''%>"><span class="ni-l"><i>🔔</i> Alertas</span></a>
+    <a href="/educacion"    class="ni <%=titulo==='Educación'     ?'act':''%>"><span class="ni-l"><i>🎓</i> Educación</span></a>
+    <a href="/metas"        class="ni <%=titulo==='Metas'         ?'act':''%>"><span class="ni-l"><i>⭐</i> Metas</span></a>
+    <span class="ns">CUENTA</span>
+    <a href="/perfil"       class="ni <%=titulo==='Perfil'        ?'act':''%>"><span class="ni-l"><i>⚙️</i> Mi Cuenta</span></a>
+    <%if(usuario.rol==='admin'){%>
+    <a href="/admin"        class="ni <%=titulo==='Admin'         ?'act':''%>" style="color:#FFD166"><span class="ni-l"><i>🛡</i> Panel Admin</span></a>
+    <%}%>
+    <a href="/logout"       class="ni danger"><span class="ni-l"><i>🚪</i> Cerrar sesión</span></a>
+  </nav>
+  <div class="sb-user">
+    <div class="ua">👤</div>
+    <div>
+      <div class="un"><%= usuario.nombre %> <%= usuario.apellidos %></div>
+      <div class="up"><%= usuario.plan==='premium'?'⭐ Premium':'Plan Gratuito' %> <a href="/perfil" style="color:var(--g);font-size:9px;margin-left:.3rem">→</a></div>
+    </div>
+  </div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1><%= titulo %></h1>
+      <span class="topbar-sub">Hola <%= usuario.nombre %> 👋 <%= new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) %></span>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <span style="color:var(--dk);font-size:13px">🔍</span>
+        <input type="text" placeholder="Buscar movimiento..." id="globalSearch">
+      </div>
+      <a href="/perfil" class="tb-u">
+        <span>👤</span>
+        <span><%= usuario.nombre %></span>
+        <span class="badge bgr"><%= usuario.plan==='premium'?'⭐ Premium':'Gratuito' %></span>
+      </a>
+    </div>
+  </header>
+  <!-- Mobile bottom nav -->
+  <nav class="mob-nav">
+    <a href="/dashboard" class="mn-i <%=titulo==='Dashboard'?'act':''%>"><span>🏠</span><span>Inicio</span></a>
+    <a href="/movimientos?tipo=egreso" class="mn-i <%=titulo==='Egresos'?'act':''%>"><span>📉</span><span>Egresos</span></a>
+    <a href="/movimientos?tipo=ingreso" class="mn-i <%=titulo==='Ingresos'?'act':''%>"><span>📈</span><span>Ingresos</span></a>
+    <a href="/presupuesto" class="mn-i <%=titulo==='Presupuesto'?'act':''%>"><span>🎯</span><span>Presupuesto</span></a>
+    <a href="/educacion" class="mn-i <%=titulo==='Educación'?'act':''%>"><span>🎓</span><span>Educación</span></a>
+    <a href="/perfil" class="mn-i <%=titulo==='Perfil'?'act':''%>"><span>⚙️</span><span>Cuenta</span></a>
+  </nav>
+  <main class="content">

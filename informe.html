@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>FINANSMART — Informe del Proyecto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;color:#1A2340;background:#fff;font-size:13px;line-height:1.6}
+
+  .cover{min-height:100vh;background:linear-gradient(135deg,#0F3060,#072146);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem;page-break-after:always}
+  .cover-logo{width:90px;height:90px;background:linear-gradient(135deg,#00D49E,#00A87E);border-radius:22px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#060D09;margin:0 auto 2rem}
+  .cover h1{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;color:#fff;margin-bottom:.5rem}
+  .cover h1 span{color:#00D49E}
+  .cover .sub{font-size:1.1rem;color:rgba(255,255,255,.65);margin-bottom:3rem}
+  .cover-meta{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap}
+  .cover-meta .label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.12em;margin-bottom:.3rem}
+  .cover-meta .value{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#fff}
+
+  .page{max-width:900px;margin:0 auto;padding:3rem 2.5rem}
+  h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:#072146;margin:2.5rem 0 1rem;padding-bottom:.5rem;border-bottom:2px solid #00D49E}
+  h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#0F3060;margin:1.5rem 0 .5rem}
+  p{color:#3A4A6B;margin-bottom:.8rem}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+  .grid2{grid-template-columns:repeat(2,1fr)}
+  .grid4{grid-template-columns:repeat(4,1fr)}
+  .card{border:1px solid #D8E3F0;border-radius:14px;padding:1.2rem;background:#F8FAFD}
+  .card .icon{font-size:1.8rem;margin-bottom:.6rem}
+  .card .title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:800;color:#0F3060;margin-bottom:.3rem}
+  .card .desc{font-size:11px;color:#6A7FA8;line-height:1.5}
+  .card.green{border-color:rgba(0,212,158,.35);background:rgba(0,212,158,.05)}
+  .card.blue{border-color:rgba(0,158,197,.35);background:rgba(0,158,197,.05)}
+  .card.yellow{border-color:rgba(255,209,102,.4);background:rgba(255,209,102,.05)}
+  .card.navy{border-color:rgba(7,33,70,.3);background:rgba(7,33,70,.04)}
+
+  table{width:100%;border-collapse:collapse;margin-bottom:1.5rem;font-size:12px}
+  th{background:#072146;color:#fff;padding:.6rem .9rem;text-align:left;font-weight:700;font-size:10px;letter-spacing:.06em}
+  td{padding:.55rem .9rem;border-bottom:1px solid #E8EFF8;color:#3A4A6B;vertical-align:top}
+  tr:nth-child(even) td{background:#F8FAFD}
+  .badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:10px;font-weight:700}
+  .badge.done{background:rgba(0,212,158,.15);color:#00875A}
+  .badge.config{background:rgba(255,209,102,.2);color:#9A6E00}
+
+  .module-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin-bottom:1.5rem}
+  .module{border:1px solid #D8E3F0;border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.8rem}
+  .module .mi{font-size:1.4rem;flex-shrink:0}
+  .module .mt{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:800;color:#0F3060}
+  .module .md{font-size:11px;color:#6A7FA8;margin-top:.2rem}
+
+  .tech{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem}
+  .pill{background:#EEF3FB;border:1px solid #C8D8EE;border-radius:20px;padding:.35rem .9rem;font-size:11px;font-weight:600;color:#2A4070}
+  .pill.g{background:rgba(0,212,158,.1);border-color:rgba(0,212,158,.3);color:#006645}
+
+  .ss-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+  .screenshot{border:2px dashed #C8D8EE;border-radius:14px;background:#F8FAFD;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;text-align:center;padding:1.5rem}
+  .screenshot .si{font-size:2.5rem;opacity:.4}
+  .screenshot .sl{font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;color:#5A7AA8}
+  .screenshot .ss{font-size:11px;color:#8A9FBF}
+
+  .prog{background:#E8EFF8;border-radius:4px;height:12px;margin-top:.4rem;overflow:hidden}
+  .prog div{height:100%;border-radius:4px;background:linear-gradient(90deg,#00D49E,#00A87E)}
+  .stat-big{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;display:block}
+
+  .code-box{background:#F0F4FA;border:1px solid #D0DCF0;border-radius:12px;padding:1.2rem 1.5rem;font-family:monospace;font-size:11.5px;color:#2A4070;line-height:2;margin-bottom:1.5rem}
+  .divider{border:none;border-top:1px solid #E8EFF8;margin:2rem 0}
+
+  @media print{
+    .cover{min-height:auto;padding:4rem 2rem;page-break-after:always}
+    .cover h1{font-size:2.5rem}
+    .page{padding:2rem 1.5rem}
+    h2{font-size:1.3rem}
+  }
+  @page{margin:1.5cm}
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="cover-logo">FS</div>
+  <h1>FINAN<span>SMART</span></h1>
+  <p class="sub">Plataforma de finanzas personales para jovenes mexicanos</p>
+  <div class="cover-meta">
+    <div><div class="label">VERSION</div><div class="value">1.0.0</div></div>
+    <div><div class="label">FECHA</div><div class="value">Mayo 2026</div></div>
+    <div><div class="label">ESTADO</div><div class="value">En desarrollo</div></div>
+    <div><div class="label">AUTOR</div><div class="value">Alain Mijangos</div></div>
+    <div><div class="label">AVANCE</div><div class="value">95%</div></div>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- 1. RESUMEN -->
+<h2>1. Resumen del Proyecto</h2>
+<p>FINANSMART es una aplicacion web de finanzas personales disenada para jovenes mexicanos. Permite registrar ingresos y egresos, visualizar reportes en tiempo real, gestionar metas de ahorro, establecer presupuestos por categoria, exportar reportes en PDF y Excel, recibir educacion financiera interactiva con examenes, y cuenta con panel de administracion.</p>
+
+<div class="grid grid4" style="margin-top:1.2rem">
+  <div class="card green" style="text-align:center"><span class="stat-big" style="color:#00875A">21</span><div class="title">RF Completados</div></div>
+  <div class="card yellow" style="text-align:center"><span class="stat-big" style="color:#9A6E00">1</span><div class="title">Solo configurar</div></div>
+  <div class="card blue" style="text-align:center"><span class="stat-big" style="color:#005F8A">9</span><div class="title">Paginas</div></div>
+  <div class="card navy" style="text-align:center"><span class="stat-big" style="color:#072146">95%</span><div class="title">Avance total</div></div>
+</div>
+
+<!-- 2. TECNOLOGIAS -->
+<h2>2. Tecnologias Utilizadas</h2>
+<h3>Backend</h3>
+<div class="tech">
+  <span class="pill g">Node.js</span><span class="pill g">Express.js 4.18</span><span class="pill g">MySQL2 3.6</span>
+  <span class="pill g">bcryptjs</span><span class="pill g">express-session</span><span class="pill g">passport.js</span>
+  <span class="pill g">passport-google-oauth20</span><span class="pill g">pdfkit</span><span class="pill g">exceljs</span>
+  <span class="pill g">dotenv</span><span class="pill g">EJS Templates</span>
+</div>
+<h3>Frontend</h3>
+<div class="tech">
+  <span class="pill">HTML5</span><span class="pill">CSS3 Variables + Responsive</span><span class="pill">JavaScript Vanilla</span>
+  <span class="pill">Chart.js</span><span class="pill">Google Fonts (Syne + DM Sans)</span>
+</div>
+<h3>Base de Datos</h3>
+<div class="tech">
+  <span class="pill g">MySQL 8.0</span><span class="pill">5 tablas relacionales</span>
+  <span class="pill">Categorias por usuario</span><span class="pill">Roles admin/usuario</span>
+</div>
+
+<!-- 3. MODULOS -->
+<h2>3. Modulos de la Aplicacion</h2>
+<div class="module-grid">
+  <div class="module"><div class="mi">🏠</div><div><div class="mt">Dashboard</div><div class="md">Balance, ingresos, egresos, grafica mensual, movimientos recientes, alertas, meta activa y recomendaciones automaticas personalizadas</div></div></div>
+  <div class="module"><div class="mi">📈</div><div><div class="mt">Ingresos / Egresos</div><div class="md">CRUD de movimientos con filtros por tipo, categoria y rango de fechas. Tabla paginada 20 registros por pagina con busqueda en tiempo real</div></div></div>
+  <div class="module"><div class="mi">📊</div><div><div class="mt">Reportes + Exportar</div><div class="md">Grafica anual de evolucion mensual y distribucion por categoria. Botones para descargar PDF y Excel con datos reales del usuario</div></div></div>
+  <div class="module"><div class="mi">🎯</div><div><div class="mt">Presupuesto</div><div class="md">Tarjetas por categoria con limites mensuales, barras de progreso con colores, alertas al 75/90/100%, progreso global y estadisticas</div></div></div>
+  <div class="module"><div class="mi">🔔</div><div><div class="mt">Alertas</div><div class="md">Centro de alertas con categorias excedidas, en alerta al 80%+ y dentro del limite. Barras de progreso con colores semaforo</div></div></div>
+  <div class="module"><div class="mi">⭐</div><div><div class="mt">Metas de Ahorro</div><div class="md">Crear metas con emoji, monto objetivo y fecha limite. Abonar, pausar, reactivar y eliminar. Progreso visual por cada meta</div></div></div>
+  <div class="module"><div class="mi">🎓</div><div><div class="mt">Educacion Financiera</div><div class="md">5 cursos completos por modulos con examen interactivo (70% para aprobar). 5 articulos con filtros por categoria y busqueda</div></div></div>
+  <div class="module"><div class="mi">⚙️</div><div><div class="mt">Perfil / Cuenta</div><div class="md">Editar datos, ingreso mensual estimado, meta de ahorro %, cambiar contrasena, recuperar contrasena por token, eliminar cuenta</div></div></div>
+  <div class="module"><div class="mi">🛡</div><div><div class="mt">Panel Administrador</div><div class="md">Estadisticas globales, gestion de usuarios: activar/desactivar, cambiar plan (gratuito/premium) y eliminar cuentas</div></div></div>
+</div>
+
+<!-- 4. ESTADO -->
+<h2>4. Estado de Funcionalidades</h2>
+<table>
+  <thead><tr><th>#</th><th>FUNCIONALIDAD</th><th>ESTADO</th><th>DETALLES</th></tr></thead>
+  <tbody>
+    <tr><td>RF-01</td><td>Registro de usuario</td><td><span class="badge done">Completo</span></td><td>Nombre, correo, contrasena cifrada con bcrypt. 10 categorias creadas automaticamente</td></tr>
+    <tr><td>RF-02</td><td>Login con Google</td><td><span class="badge config">Solo config</span></td><td>Passport.js instalado y configurado. Pegar Client ID y Secret en .env para activar</td></tr>
+    <tr><td>RF-03</td><td>Login correo/contrasena</td><td><span class="badge done">Completo</span></td><td>Sesion con express-session, rutas protegidas, rol guardado en sesion</td></tr>
+    <tr><td>RF-04</td><td>Dashboard con metricas</td><td><span class="badge done">Completo</span></td><td>Balance, ingresos, egresos, 2 graficas Chart.js, alertas, meta, recomendaciones</td></tr>
+    <tr><td>RF-05</td><td>Exportar reportes PDF</td><td><span class="badge done">Completo</span></td><td>PDF con resumen del mes, gastos por categoria y tabla de ultimos movimientos</td></tr>
+    <tr><td>RF-06</td><td>Registro de movimientos</td><td><span class="badge done">Completo</span></td><td>Ingresos y egresos con categoria, fecha y notas. Editar y eliminar</td></tr>
+    <tr><td>RF-07</td><td>Editar perfil</td><td><span class="badge done">Completo</span></td><td>Nombre, apellidos, ciudad, ocupacion, ingreso mensual estimado</td></tr>
+    <tr><td>RF-08</td><td>Cambiar contrasena</td><td><span class="badge done">Completo</span></td><td>Verificacion de contrasena actual + nueva cifrada con bcrypt</td></tr>
+    <tr><td>RF-09</td><td>Presupuesto por categoria</td><td><span class="badge done">Completo</span></td><td>Limites mensuales, barras de progreso, toggles de alerta, estadisticas globales</td></tr>
+    <tr><td>RF-10</td><td>Alertas de presupuesto</td><td><span class="badge done">Completo</span></td><td>Alertas automaticas al 80% y 100% del limite por categoria</td></tr>
+    <tr><td>RF-11</td><td>Reportes con graficas</td><td><span class="badge done">Completo</span></td><td>Barras mensuales anuales y distribucion por categoria con Chart.js</td></tr>
+    <tr><td>RF-12</td><td>Metas de ahorro</td><td><span class="badge done">Completo</span></td><td>Crear, abonar, pausar, reactivar y eliminar metas con progreso visual</td></tr>
+    <tr><td>RF-13</td><td>Categorias personalizadas</td><td><span class="badge done">Completo</span></td><td>10 categorias por defecto al registrarse, gestionables desde presupuesto</td></tr>
+    <tr><td>RF-14</td><td>Educacion financiera</td><td><span class="badge done">Completo</span></td><td>5 cursos con modulos y examenes + 5 articulos + busqueda y filtros por tema</td></tr>
+    <tr><td>RF-15</td><td>Recomendaciones automaticas</td><td><span class="badge done">Completo</span></td><td>Basadas en tasa de ahorro real, categoria de mayor gasto y alertas activas</td></tr>
+    <tr><td>RF-16</td><td>Historial con filtros</td><td><span class="badge done">Completo</span></td><td>Filtros por tipo, categoria y fechas. Paginacion de 20 registros por pagina</td></tr>
+    <tr><td>RF-17</td><td>Recuperar contrasena</td><td><span class="badge done">Completo</span></td><td>Token de reset generado y guardado en BD, enlace listo para conectar nodemailer</td></tr>
+    <tr><td>RF-18</td><td>Eliminar cuenta</td><td><span class="badge done">Completo</span></td><td>Elimina todos los datos del usuario con modal de confirmacion</td></tr>
+    <tr><td>RF-19</td><td>Exportar Excel</td><td><span class="badge done">Completo</span></td><td>Excel con hoja de movimientos (filtros automaticos) y hoja de resumen mensual</td></tr>
+    <tr><td>RF-20</td><td>Historial financiero</td><td><span class="badge done">Completo</span></td><td>Tabla completa con todos los movimientos, filtros multiples y paginacion</td></tr>
+    <tr><td>RF-21</td><td>Diseno responsive movil</td><td><span class="badge done">Completo</span></td><td>Nav inferior, grids adaptativos, accesible por IP en misma red WiFi</td></tr>
+    <tr><td>RF-22</td><td>Panel administrador</td><td><span class="badge done">Completo</span></td><td>Estadisticas globales, activar/desactivar usuarios, cambiar plan, eliminar cuentas</td></tr>
+  </tbody>
+</table>
+
+<!-- 5. CAPTURAS -->
+<h2>5. Capturas de Pantalla</h2>
+<p style="color:#8A9FBF;font-size:12px;margin-bottom:1rem">Cmd + Shift + 4 para tomar capturas y agregarlas aqui antes de imprimir.</p>
+<div class="ss-grid">
+  <div class="screenshot"><div class="si">🏠</div><div class="sl">Dashboard Principal</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">📱</div><div class="sl">Vista Movil</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">🔐</div><div class="sl">Login / Registro</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">🎯</div><div class="sl">Presupuesto</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">📊</div><div class="sl">Reportes + Exportar</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">⭐</div><div class="sl">Metas de Ahorro</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">🎓</div><div class="sl">Educacion + Examen</div><div class="ss">Captura aqui</div></div>
+  <div class="screenshot"><div class="si">🛡</div><div class="sl">Panel Administrador</div><div class="ss">Captura aqui</div></div>
+</div>
+
+<!-- 6. ESTRUCTURA -->
+<h2>6. Estructura del Proyecto</h2>
+<div class="code-box">
+finansmart/<br>
+├── server.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Servidor Express + Passport Google OAuth<br>
+├── package.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 9 dependencias instaladas<br>
+├── .env &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← DB, session secret, Google OAuth keys<br>
+├── informe.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Este documento<br>
+├── config/db.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Pool de conexion MySQL<br>
+├── routes/<br>
+│ &nbsp;&nbsp;├── auth.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Login, registro, recuperar, reset contrasena<br>
+│ &nbsp;&nbsp;├── dashboard.js &nbsp;← Metricas + recomendaciones automaticas<br>
+│ &nbsp;&nbsp;├── movimientos.js← CRUD + filtros fecha/cat/tipo + paginacion<br>
+│ &nbsp;&nbsp;├── reportes.js &nbsp;&nbsp;← Graficas anuales<br>
+│ &nbsp;&nbsp;├── exportar.js &nbsp;&nbsp;← PDF (pdfkit) y Excel (exceljs)<br>
+│ &nbsp;&nbsp;├── presupuesto.js← Presupuestos + estadisticas<br>
+│ &nbsp;&nbsp;├── alertas.js &nbsp;&nbsp;&nbsp;← Centro de alertas<br>
+│ &nbsp;&nbsp;├── metas.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Metas de ahorro<br>
+│ &nbsp;&nbsp;├── educacion.js &nbsp;← 5 cursos + examenes + articulos<br>
+│ &nbsp;&nbsp;├── perfil.js &nbsp;&nbsp;&nbsp;&nbsp;← Perfil + eliminar cuenta<br>
+│ &nbsp;&nbsp;└── admin.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Panel admin (protegido por rol)<br>
+├── views/<br>
+│ &nbsp;&nbsp;├── partials/ &nbsp;&nbsp;&nbsp;&nbsp;← header.ejs (sidebar + nav movil), footer.ejs<br>
+│ &nbsp;&nbsp;├── login.ejs, registro.ejs, recuperar.ejs, reset.ejs<br>
+│ &nbsp;&nbsp;├── dashboard.ejs, movimientos.ejs, reportes.ejs<br>
+│ &nbsp;&nbsp;├── presupuesto.ejs, alertas.ejs, metas.ejs<br>
+│ &nbsp;&nbsp;├── educacion.ejs, educacion_curso.ejs<br>
+│ &nbsp;&nbsp;├── perfil.ejs, admin.ejs<br>
+└── public/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── css/style.css &nbsp;← ~450 lineas CSS + responsive movil<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── img/logo.png &nbsp;&nbsp;← Logo FINANSMART
+</div>
+
+<!-- 7. BASE DE DATOS -->
+<h2>7. Modelo de Base de Datos</h2>
+<div class="grid grid2">
+  <div class="card"><div class="icon">👤</div><div class="title">usuarios</div><div class="desc">id, nombre, apellidos, correo, contrasena (bcrypt), ciudad, ocupacion, ingreso_mensual, meta_ahorro, plan, activo, rol, reset_token, creado_en</div></div>
+  <div class="card"><div class="icon">💸</div><div class="title">movimientos</div><div class="desc">id, usuario_id, tipo (ingreso/egreso), concepto, monto DECIMAL(12,2), fecha, categoria_id, notas, creado_en</div></div>
+  <div class="card"><div class="icon">🏷</div><div class="title">categorias</div><div class="desc">id, usuario_id, nombre, icono (emoji), tipo (ingreso/egreso/ambos). 10 creadas automaticamente al registrarse</div></div>
+  <div class="card"><div class="icon">🎯</div><div class="title">presupuestos</div><div class="desc">id, usuario_id, categoria_id, limite_monto, mes, anio. Un presupuesto por categoria por mes</div></div>
+  <div class="card"><div class="icon">⭐</div><div class="title">metas</div><div class="desc">id, usuario_id, nombre, icono, monto_meta, monto_actual, fecha_limite, estado (activa/pausada/completada), creado_en</div></div>
+</div>
+
+<!-- 8. PROGRESO -->
+<h2>8. Progreso General</h2>
+<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#0F3060;margin-bottom:.4rem">
+  <span>Requisitos funcionales completados</span><span>21 / 22 — 95%</span>
+</div>
+<div class="prog" style="margin-bottom:1.5rem"><div style="width:95%"></div></div>
+<div class="grid">
+  <div class="card green" style="text-align:center"><span class="stat-big" style="color:#00875A">21</span><div class="title">Completados</div></div>
+  <div class="card yellow" style="text-align:center"><span class="stat-big" style="color:#9A6E00">1</span><div class="title">Solo configurar</div></div>
+  <div class="card blue" style="text-align:center"><span class="stat-big" style="color:#005F8A">95%</span><div class="title">Avance total</div></div>
+</div>
+
+<!-- 9. PENDIENTE -->
+<h2>9. Unico Pendiente</h2>
+<table>
+  <thead><tr><th>FUNCIONALIDAD</th><th>ESTADO</th><th>QUE FALTA</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Login con Google (RF-02)</td>
+      <td><span class="badge config">Solo configurar</span></td>
+      <td>1. Crear proyecto en console.cloud.google.com<br>2. Copiar Client ID y Client Secret<br>3. Descomentar 3 lineas en el archivo .env</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+<div style="text-align:center;color:#8A9FBF;font-size:11px;padding:1rem 0">
+  FINANSMART v1.0 &middot; Informe Mayo 2026 &middot; Desarrollado por Alain Mijangos<br>
+  Node.js &middot; Express &middot; MySQL &middot; EJS &middot; Chart.js &middot; PDFKit &middot; ExcelJS &middot; Passport.js
+</div>
+
+</div>
+</body>
+</html>

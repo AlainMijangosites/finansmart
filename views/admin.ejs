@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FINANSMART — Panel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head><body class="app"><div class="layout">
+
+<aside class="sidebar">
+  <div class="sb-logo">
+    <img src="/img/logo.png" width="36" height="36" alt="FINANSMART" style="border-radius:10px;flex-shrink:0">
+    <span>FINAN<span class="green">SMART</span></span>
+  </div>
+  <nav class="sb-nav">
+    <span class="ns">ADMINISTRADOR</span>
+    <a href="/admin"     class="ni act"><span class="ni-l"><i>🛡</i> Panel Admin</span></a>
+    <a href="/dashboard" class="ni"><span class="ni-l"><i>🏠</i> Dashboard</span></a>
+    <span class="ns">CUENTA</span>
+    <a href="/logout" class="ni danger"><span class="ni-l"><i>🚪</i> Cerrar sesión</span></a>
+  </nav>
+  <div class="sb-user">
+    <div class="ua">🛡</div>
+    <div>
+      <div class="un"><%=usuario.nombre%> <%=usuario.apellidos%></div>
+      <div class="up" style="color:#FFD166">⭐ Administrador</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Panel de Administración</h1>
+      <span class="topbar-sub">Gestión de usuarios del sistema</span>
+    </div>
+  </header>
+  <main class="content">
+
+<!-- STATS -->
+<div class="sg g4" style="margin-bottom:1.4rem">
+  <div class="sc gc">
+    <div class="sc-l">USUARIOS TOTALES</div>
+    <div class="sc-v"><%=stats.total%></div>
+    <div class="sc-s">Registrados</div>
+    <span class="sc-i">👥</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">ACTIVOS</div>
+    <div class="sc-v green"><%=stats.activos%></div>
+    <div class="sc-s">Cuentas activas</div>
+    <span class="sc-i">✅</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">PREMIUM</div>
+    <div class="sc-v yellow"><%=stats.premium%></div>
+    <div class="sc-s">Plan premium</div>
+    <span class="sc-i">⭐</span>
+  </div>
+  <div class="sc">
+    <div class="sc-l">MOVIMIENTOS</div>
+    <div class="sc-v white"><%=movStats.total%></div>
+    <div class="sc-s">$<%=parseFloat(movStats.volumen).toLocaleString('es-MX',{minimumFractionDigits:2})%> en volumen</div>
+    <span class="sc-i">💸</span>
+  </div>
+</div>
+
+<!-- TABLA USUARIOS -->
+<div class="card">
+  <div class="ctr">
+    <span class="ct">👥 Usuarios del Sistema</span>
+    <span style="font-size:12px;color:var(--m)"><%=usuarios.length%> usuarios</span>
+  </div>
+  <div class="tw">
+    <table class="tbl">
+      <thead><tr>
+        <th>ID</th><th>Nombre</th><th>Correo</th><th>Plan</th><th>Estado</th><th>Registro</th><th>Acciones</th>
+      </tr></thead>
+      <tbody>
+      <%usuarios.forEach(u=>{%>
+      <tr>
+        <td class="muted">#<%=u.id%></td>
+        <td><strong style="color:var(--w)"><%=u.nombre%> <%=u.apellidos%></strong></td>
+        <td class="muted"><%=u.correo%></td>
+        <td>
+          <form method="POST" action="/admin/plan/<%=u.id%>" style="display:inline">
+            <select name="plan" onchange="this.form.submit()" style="font-size:11px;padding:.2rem .4rem;border-radius:6px;border:1px solid var(--b);background:var(--s);color:var(--t)">
+              <option value="gratuito" <%=u.plan==='gratuito'?'selected':''%>>Gratuito</option>
+              <option value="premium"  <%=u.plan==='premium' ?'selected':''%>>⭐ Premium</option>
+            </select>
+          </form>
+        </td>
+        <td>
+          <span class="badge <%=u.activo?'bg':'br'%>"><%=u.activo?'✅ Activo':'🚫 Inactivo'%></span>
+        </td>
+        <td class="muted"><%=new Date(u.creado_en).toLocaleDateString('es-MX')%></td>
+        <td class="acts">
+          <form method="POST" action="/admin/toggle/<%=u.id%>" style="display:inline">
+            <button type="submit" class="btn-icon" title="<%=u.activo?'Desactivar':'Activar'%>"><%=u.activo?'🔒':'🔓'%></button>
+          </form>
+          <% if(u.id !== usuario.id){ %>
+          <form method="POST" action="/admin/eliminar/<%=u.id%>" style="display:inline" onsubmit="return confirm('¿Eliminar usuario <%=u.nombre%> y todos sus datos?')">
+            <button type="submit" class="btn-icon d" title="Eliminar">🗑</button>
+          </form>
+          <% } %>
+        </td>
+      </tr>
+      <%})%>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  </main>
+</div>
+</div>
+</body></html>

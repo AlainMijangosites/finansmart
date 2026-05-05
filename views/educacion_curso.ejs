@@ -1,0 +1,172 @@
+<%- include('partials/header', {titulo:'Educación', usuario}) %>
+
+<div style="max-width:800px;margin:0 auto">
+
+  <!-- BREADCRUMB -->
+  <div style="display:flex;align-items:center;gap:.5rem;font-size:12px;color:var(--m);margin-bottom:1.2rem;flex-wrap:wrap">
+    <a href="/educacion" style="color:var(--g)">🎓 Educación</a>
+    <span>›</span>
+    <span style="color:var(--t)"><%=curso.titulo%></span>
+  </div>
+
+  <!-- CABECERA DEL CURSO -->
+  <div class="card mb">
+    <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+      <div style="width:60px;height:60px;background:var(--bg2);border:1px solid var(--b);border-radius:14px;display:grid;place-items:center;font-size:2rem;flex-shrink:0"><%=curso.icono%></div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:10px;font-weight:700;color:var(--g);letter-spacing:.1em;margin-bottom:.3rem"><%=curso.categoria.toUpperCase()%> · <%=curso.nivel%></div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--w);margin-bottom:.4rem"><%=curso.titulo%></h1>
+        <div style="display:flex;gap:1rem;font-size:12px;color:var(--m);flex-wrap:wrap">
+          <span>📚 <%=curso.modulos.length%> módulos</span>
+          <span>⏱ <%=curso.duracion%></span>
+          <span>🎯 <%=curso.nivel%></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÓDULOS DEL CURSO -->
+  <%curso.modulos.forEach(function(mod, idx){%>
+  <div class="card mb">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--g),var(--gd));border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0"><%=idx+1%></div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--w);margin:0"><%=mod.titulo%></h2>
+    </div>
+    <div class="sep" style="margin-top:0"></div>
+    <div class="article-body" style="margin-top:.8rem">
+      <%mod.contenido.forEach(function(bloque){%>
+        <%if(bloque.tipo==='p'){%>
+          <p><%=bloque.texto%></p>
+        <%}else if(bloque.tipo==='tip'){%>
+          <div class="tip-box"><%=bloque.texto%></div>
+        <%}else if(bloque.tipo==='lista'){%>
+          <ul><%bloque.items.forEach(function(it){%><li><%=it%></li><%})%></ul>
+        <%}%>
+      <%})%>
+    </div>
+  </div>
+  <%})%>
+
+  <!-- EXAMEN FINAL -->
+  <div class="card" id="secExamen">
+    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem">
+      <div style="font-size:1.8rem">📝</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--w)">Examen Final</div>
+        <div style="font-size:12px;color:var(--m)"><%=curso.examen.preguntas.length%> preguntas · Necesitas 70% para aprobar</div>
+      </div>
+    </div>
+    <div class="sep" style="margin-top:0"></div>
+
+    <div id="quizArea" style="margin-top:1rem">
+      <%curso.examen.preguntas.forEach(function(q, qi){%>
+      <div class="quiz-q" id="q<%=qi%>" style="margin-bottom:1.4rem">
+        <div style="font-size:13px;font-weight:700;color:var(--w);margin-bottom:.7rem"><%=qi+1%>. <%=q.pregunta%></div>
+        <div style="display:flex;flex-direction:column;gap:.4rem">
+          <%q.opciones.forEach(function(op, oi){%>
+          <label class="quiz-op" id="op-<%=qi%>-<%=oi%>">
+            <input type="radio" name="q<%=qi%>" value="<%=oi%>" style="display:none">
+            <span class="quiz-op-dot"></span>
+            <span style="font-size:13px;color:var(--t)"><%=op%></span>
+          </label>
+          <%})%>
+        </div>
+        <div class="quiz-fb" id="fb<%=qi%>" style="display:none;margin-top:.6rem;font-size:12px;padding:.5rem .8rem;border-radius:8px"></div>
+      </div>
+      <%})%>
+
+      <div style="display:flex;gap:.8rem;margin-top:1.2rem;flex-wrap:wrap">
+        <button class="btn-p" onclick="calificar(<%- JSON.stringify(curso.examen.preguntas.map(function(q){return q.correcta;})) %>)">✅ Enviar respuestas</button>
+        <button class="btn-g sm" onclick="reiniciar()">🔄 Reintentar</button>
+      </div>
+
+      <!-- RESULTADO -->
+      <div id="resultado" style="display:none;margin-top:1.2rem"></div>
+    </div>
+  </div>
+
+  <!-- ACCIONES -->
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;margin-top:1.2rem">
+    <a href="/educacion" class="btn-g sm">← Volver a Educación</a>
+    <div style="display:flex;gap:.6rem">
+      <a href="/metas" class="btn-p sm">⭐ Crear una meta</a>
+      <a href="/presupuesto" class="btn-g sm">🎯 Ir a Presupuesto</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var respuestas = {};
+
+document.querySelectorAll('.quiz-op').forEach(function(label) {
+  label.addEventListener('click', function() {
+    var input = this.querySelector('input');
+    var qi = input.name.replace('q','');
+    respuestas[qi] = parseInt(input.value);
+    // highlight selected
+    var group = document.querySelectorAll('input[name="' + input.name + '"]');
+    group.forEach(function(r) {
+      document.getElementById('op-' + qi + '-' + r.value).classList.remove('selected');
+    });
+    this.classList.add('selected');
+    input.checked = true;
+  });
+});
+
+function calificar(correctas) {
+  var total = correctas.length, aciertos = 0;
+  for (var i = 0; i < total; i++) {
+    var fb = document.getElementById('fb' + i);
+    fb.style.display = 'block';
+    if (respuestas[i] === undefined) {
+      fb.textContent = '⚠ No respondiste esta pregunta.';
+      fb.style.background = 'rgba(245,158,11,.1)';
+      fb.style.color = '#B45309';
+      fb.style.border = '1px solid rgba(245,158,11,.3)';
+    } else if (respuestas[i] === correctas[i]) {
+      aciertos++;
+      fb.textContent = '✅ ¡Correcto!';
+      fb.style.background = 'rgba(0,158,197,.08)';
+      fb.style.color = 'var(--gd)';
+      fb.style.border = '1px solid rgba(0,158,197,.25)';
+      document.getElementById('op-' + i + '-' + respuestas[i]).classList.add('correct');
+    } else {
+      fb.textContent = '❌ Incorrecto. La respuesta correcta era la opción ' + (correctas[i]+1) + '.';
+      fb.style.background = 'rgba(229,57,53,.07)';
+      fb.style.color = '#C62828';
+      fb.style.border = '1px solid rgba(229,57,53,.25)';
+      document.getElementById('op-' + i + '-' + respuestas[i]).classList.add('wrong');
+      document.getElementById('op-' + i + '-' + correctas[i]).classList.add('correct');
+    }
+    // disable options
+    document.querySelectorAll('input[name="q' + i + '"]').forEach(function(r){ r.disabled = true; });
+  }
+  var pct = Math.round((aciertos/total)*100);
+  var res = document.getElementById('resultado');
+  res.style.display = 'block';
+  if (pct >= 70) {
+    res.innerHTML = '<div style="background:rgba(0,158,197,.08);border:1px solid rgba(0,158,197,.3);border-radius:12px;padding:1.2rem;text-align:center">' +
+      '<div style="font-size:2rem;margin-bottom:.4rem">🏆</div>' +
+      '<div style="font-family:\'Syne\',sans-serif;font-size:1.2rem;font-weight:800;color:var(--w)">¡Aprobado! ' + aciertos + '/' + total + ' (' + pct + '%)</div>' +
+      '<div style="font-size:13px;color:var(--m);margin-top:.3rem">Completaste este curso exitosamente.</div></div>';
+  } else {
+    res.innerHTML = '<div style="background:rgba(229,57,53,.06);border:1px solid rgba(229,57,53,.25);border-radius:12px;padding:1.2rem;text-align:center">' +
+      '<div style="font-size:2rem;margin-bottom:.4rem">📖</div>' +
+      '<div style="font-family:\'Syne\',sans-serif;font-size:1.2rem;font-weight:800;color:var(--w)">Necesitas repasar: ' + aciertos + '/' + total + ' (' + pct + '%)</div>' +
+      '<div style="font-size:13px;color:var(--m);margin-top:.3rem">Revisa los módulos e inténtalo de nuevo.</div></div>';
+  }
+}
+
+function reiniciar() {
+  respuestas = {};
+  document.querySelectorAll('.quiz-op').forEach(function(l){
+    l.classList.remove('selected','correct','wrong');
+  });
+  document.querySelectorAll('.quiz-fb').forEach(function(f){ f.style.display='none'; });
+  document.querySelectorAll('input[type=radio]').forEach(function(r){ r.checked=false; r.disabled=false; });
+  document.getElementById('resultado').style.display='none';
+}
+</script>
+
+<%- include('partials/footer') %>

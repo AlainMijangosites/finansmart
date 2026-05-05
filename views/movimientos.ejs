@@ -1,0 +1,175 @@
+<%- include('partials/header', {titulo:titulo, usuario}) %>
+
+<!-- STATS -->
+<div class="sg g3">
+  <div class="sc"><div class="sc-l">INGRESOS DEL MES</div><div class="sc-v green">$<%=parseFloat(totales.ing).toLocaleString('es-MX',{minimumFractionDigits:2})%></div><span class="sc-i">📈</span></div>
+  <div class="sc"><div class="sc-l">EGRESOS DEL MES</div><div class="sc-v red">$<%=parseFloat(totales.eg).toLocaleString('es-MX',{minimumFractionDigits:2})%></div><span class="sc-i">📉</span></div>
+  <div class="sc"><div class="sc-l">BALANCE</div><div class="sc-v <%=(totales.ing-totales.eg)>=0?'green':'red'%>">$<%=(totales.ing-totales.eg).toLocaleString('es-MX',{minimumFractionDigits:2})%></div><span class="sc-i">💰</span></div>
+</div>
+
+<!-- FORMULARIO NUEVO MOVIMIENTO -->
+<div class="card mb">
+  <div class="ct">➕ Nuevo Movimiento</div>
+  <form method="POST" action="/movimientos/agregar" class="fg2">
+    <div class="fg"><label>Tipo</label>
+      <select name="tipo">
+        <option value="egreso"  <%=tipoFiltro==='egreso' ?'selected':''%>>💸 Egreso</option>
+        <option value="ingreso" <%=tipoFiltro==='ingreso'?'selected':''%>>💰 Ingreso</option>
+      </select>
+    </div>
+    <div class="fg"><label>Concepto</label><input type="text" name="concepto" placeholder="Ej: Supermercado" required></div>
+    <div class="fg"><label>Monto ($)</label><input type="number" name="monto" step="0.01" placeholder="0.00" required></div>
+    <div class="fg"><label>Fecha</label><input type="date" name="fecha" value="<%=new Date().toISOString().split('T')[0]%>" required></div>
+    <div class="fg"><label>Categoría</label>
+      <select name="categoria_id">
+        <option value="">Sin categoría</option>
+        <%categorias.forEach(c=>{%><option value="<%=c.id%>"><%=c.icono%> <%=c.nombre%></option><%})%>
+      </select>
+    </div>
+    <div class="fg"><label>Notas</label><input type="text" name="notas" placeholder="Opcional"></div>
+    <div class="fg ae"><button type="submit" class="btn-p">💾 Guardar</button></div>
+  </form>
+</div>
+
+<!-- FILTROS -->
+<div class="card mb" style="padding:.9rem 1rem">
+  <form method="GET" action="/movimientos" style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:flex-end">
+    <div class="fg" style="flex:1;min-width:130px">
+      <label>TIPO</label>
+      <select name="tipo">
+        <option value="todos"   <%=tipoFiltro==='todos'  ?'selected':''%>>Todos</option>
+        <option value="ingreso" <%=tipoFiltro==='ingreso'?'selected':''%>>📈 Ingresos</option>
+        <option value="egreso"  <%=tipoFiltro==='egreso' ?'selected':''%>>📉 Egresos</option>
+      </select>
+    </div>
+    <div class="fg" style="flex:1;min-width:130px">
+      <label>CATEGORÍA</label>
+      <select name="categoria">
+        <option value="">Todas</option>
+        <%categorias.forEach(c=>{%><option value="<%=c.id%>" <%=catFiltro==c.id?'selected':''%>><%=c.icono%> <%=c.nombre%></option><%})%>
+      </select>
+    </div>
+    <div class="fg" style="flex:1;min-width:120px">
+      <label>DESDE</label>
+      <input type="date" name="fecha_desde" value="<%=fechaDesde%>">
+    </div>
+    <div class="fg" style="flex:1;min-width:120px">
+      <label>HASTA</label>
+      <input type="date" name="fecha_hasta" value="<%=fechaHasta%>">
+    </div>
+    <div style="display:flex;gap:.4rem">
+      <button type="submit" class="btn-p sm">🔍 Filtrar</button>
+      <a href="/movimientos" class="btn-g sm">✕ Limpiar</a>
+    </div>
+  </form>
+</div>
+
+<!-- TABS FILTRO -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;margin-bottom:1rem">
+  <div class="tabs">
+    <a href="/movimientos"               class="tab <%=tipoFiltro==='todos'  ?'act':''%>">Todos (<%=totalRows%>)</a>
+    <a href="/movimientos?tipo=ingreso"  class="tab <%=tipoFiltro==='ingreso'?'act':''%>">📈 Ingresos</a>
+    <a href="/movimientos?tipo=egreso"   class="tab <%=tipoFiltro==='egreso' ?'act':''%>">📉 Egresos</a>
+  </div>
+  <div class="search-bar">
+    <span style="color:var(--dk);font-size:13px">🔍</span>
+    <input type="text" id="filtroTabla" placeholder="Buscar..." oninput="filtrarTabla(this.value)" style="background:none;border:none;outline:none;color:var(--t);font-size:12px;width:150px;margin-left:.4rem">
+  </div>
+</div>
+
+<!-- TABLA -->
+<div class="card">
+  <div class="ctr">
+    <span class="ct">
+      <%=tipoFiltro==='ingreso'?'📈 Ingresos':tipoFiltro==='egreso'?'📉 Egresos':'📋 Todos los movimientos'%>
+      <span class="muted" style="font-size:12px;font-weight:400"> (<%=movimientos.length%>)</span>
+    </span>
+  </div>
+  <%if(movimientos.length===0){%>
+  <p class="empty">
+    <%=tipoFiltro==='ingreso'?'No hay ingresos registrados.':tipoFiltro==='egreso'?'No hay egresos registrados.':'No hay movimientos aún.'%>
+  </p>
+  <%}else{%>
+  <div class="tw"><table class="tbl" id="tablaMovs">
+    <thead><tr>
+      <th>Fecha</th><th>Tipo</th><th>Concepto</th><th>Categoría</th><th>Monto</th><th>Acciones</th>
+    </tr></thead>
+    <tbody><%movimientos.forEach(m=>{%><tr>
+      <td class="muted"><%=new Date(m.fecha).toLocaleDateString('es-MX')%></td>
+      <td><span class="badge <%=m.tipo==='ingreso'?'bg':'br'%>"><%=m.tipo%></span></td>
+      <td>
+        <strong style="color:var(--w)"><%=m.concepto%></strong>
+        <%if(m.notas){%><br><small class="muted"><%=m.notas%></small><%}%>
+      </td>
+      <td><%=m.cat_icono||''%> <span class="muted"><%=m.cat_nombre||'—'%></span></td>
+      <td class="<%=m.tipo==='ingreso'?'green':'red'%> bold"><%=m.tipo==='ingreso'?'+':'-'%>$<%=parseFloat(m.monto).toLocaleString('es-MX',{minimumFractionDigits:2})%></td>
+      <td class="acts">
+        <button class="btn-icon" onclick="openEdit(<%=JSON.stringify(m)%>)" title="Editar">✏️</button>
+        <form method="POST" action="/movimientos/eliminar/<%=m.id%>" style="display:inline" onsubmit="return confirm('¿Eliminar?')">
+          <button type="submit" class="btn-icon d" title="Eliminar">🗑</button>
+        </form>
+      </td>
+    </tr><%})%></tbody>
+  </table></div>
+  <%}%>
+
+  <!-- PAGINACIÓN -->
+  <%if(totalPages>1){%>
+  <div style="display:flex;justify-content:center;align-items:center;gap:.4rem;margin-top:1rem;flex-wrap:wrap">
+    <%if(page>1){%>
+    <a href="/movimientos?tipo=<%=tipoFiltro%>&categoria=<%=catFiltro%>&fecha_desde=<%=fechaDesde%>&fecha_hasta=<%=fechaHasta%>&page=<%=page-1%>" class="btn-g sm">← Anterior</a>
+    <%}%>
+    <%for(let i=1;i<=totalPages;i++){%>
+    <a href="/movimientos?tipo=<%=tipoFiltro%>&categoria=<%=catFiltro%>&fecha_desde=<%=fechaDesde%>&fecha_hasta=<%=fechaHasta%>&page=<%=i%>"
+       class="btn-g sm <%=i===page?'act':''%>" style="<%=i===page?'background:var(--g);color:#fff;border-color:var(--g)':''%>"><%=i%></a>
+    <%}%>
+    <%if(page<totalPages){%>
+    <a href="/movimientos?tipo=<%=tipoFiltro%>&categoria=<%=catFiltro%>&fecha_desde=<%=fechaDesde%>&fecha_hasta=<%=fechaHasta%>&page=<%=page+1%>" class="btn-g sm">Siguiente →</a>
+    <%}%>
+  </div>
+  <%}%>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal" id="modalEdit">
+  <div class="mbox">
+    <div class="mh"><span>✏️ Editar Movimiento</span><button class="mcl" onclick="closeModal('modalEdit')">✕</button></div>
+    <form method="POST" id="editForm" class="fg2">
+      <div class="fg"><label>Tipo</label><select name="tipo" id="et"><option value="egreso">💸 Egreso</option><option value="ingreso">💰 Ingreso</option></select></div>
+      <div class="fg"><label>Concepto</label><input type="text" name="concepto" id="ec" required></div>
+      <div class="fg"><label>Monto</label><input type="number" name="monto" id="em" step="0.01" required></div>
+      <div class="fg"><label>Fecha</label><input type="date" name="fecha" id="ef" required></div>
+      <div class="fg"><label>Categoría</label>
+        <select name="categoria_id" id="ecat">
+          <option value="">Sin categoría</option>
+          <%categorias.forEach(c=>{%><option value="<%=c.id%>"><%=c.icono%> <%=c.nombre%></option><%})%>
+        </select>
+      </div>
+      <div class="fg"><label>Notas</label><input type="text" name="notas" id="en"></div>
+      <div class="fg ae" style="gap:.6rem">
+        <button type="submit" class="btn-p">Actualizar</button>
+        <button type="button" class="btn-g" onclick="closeModal('modalEdit')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEdit(m) {
+  document.getElementById('editForm').action = '/movimientos/editar/' + m.id;
+  document.getElementById('et').value   = m.tipo;
+  document.getElementById('ec').value   = m.concepto;
+  document.getElementById('em').value   = m.monto;
+  document.getElementById('ef').value   = m.fecha ? m.fecha.split('T')[0] : '';
+  document.getElementById('ecat').value = m.categoria_id || '';
+  document.getElementById('en').value   = m.notas || '';
+  openModal('modalEdit');
+}
+function filtrarTabla(q) {
+  const ql = q.toLowerCase();
+  document.querySelectorAll('#tablaMovs tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(ql) ? '' : 'none';
+  });
+}
+</script>
+<%- include('partials/footer') %>

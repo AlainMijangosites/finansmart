@@ -1,0 +1,213 @@
+<%- include('partials/header', {titulo:'Educación', usuario}) %>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">🎓 Educación Financiera</div>
+    <div class="page-sub">Aprende a manejar mejor tu dinero</div>
+  </div>
+  <div class="search-bar" style="display:flex">
+    <span style="color:var(--dk);font-size:13px">🔍</span>
+    <input type="text" id="searchEdu" placeholder="Buscar cursos o artículos..." oninput="filtrarContenido(this.value)" style="background:none;border:none;outline:none;color:var(--t);font-size:12px;width:200px;margin-left:.5rem">
+  </div>
+</div>
+
+<!-- CURSO DESTACADO -->
+<div class="card mb" style="background:linear-gradient(135deg,#1D5096,#072146);border-color:rgba(0,158,197,.35)">
+  <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap">
+    <div style="font-size:3rem;flex-shrink:0">🚀</div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:10px;font-weight:700;color:rgba(0,158,197,.9);letter-spacing:.1em;margin-bottom:.3rem">⭐ CURSO DESTACADO</div>
+      <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#FFFFFF;margin-bottom:.3rem">Finanzas personales para principiantes</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.65);margin-bottom:.7rem">6 módulos · 2h 30min · Nivel básico · Gratis</div>
+      <div style="display:flex;align-items:center;gap:.8rem">
+        <div style="flex:1;max-width:220px">
+          <div style="height:5px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden"><div style="width:65%;height:100%;background:#009EC5;border-radius:3px"></div></div>
+        </div>
+        <span style="font-size:12px;color:#009EC5;font-weight:700">65% completado</span>
+      </div>
+    </div>
+    <a href="/educacion/curso/finanzas-principiantes" class="btn-p sm">Continuar curso →</a>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs" id="tabsEdu">
+  <button class="tab act" onclick="setTab(this,'todos')">Todos</button>
+  <button class="tab" onclick="setTab(this,'cursos')">Cursos</button>
+  <button class="tab" onclick="setTab(this,'articulos')">Artículos</button>
+  <button class="tab" onclick="setTab(this,'ahorro')">Ahorro</button>
+  <button class="tab" onclick="setTab(this,'inversion')">Inversión</button>
+  <button class="tab" onclick="setTab(this,'deudas')">Deudas</button>
+</div>
+
+<!-- CURSOS -->
+<div class="ct" style="margin-bottom:.8rem" id="titCursos">📚 Cursos disponibles</div>
+<div class="edu-grid" id="cursosGrid">
+
+  <div class="edu-card" data-cat="cursos ahorro">
+    <div class="edu-icon">💰</div>
+    <div class="edu-title">Ahorro e Inversión Básica</div>
+    <div class="edu-meta">4 módulos · 1h 45min · Básico</div>
+    <span class="badge bg" style="margin-bottom:.8rem">Gratis</span>
+    <div><a href="/educacion/curso/ahorro-inversion-basica" class="btn-p sm" style="width:100%;display:block;text-align:center">Comenzar →</a></div>
+  </div>
+
+  <div class="edu-card" data-cat="cursos ahorro">
+    <div class="edu-icon">📊</div>
+    <div class="edu-title">Control de Gastos Diarios</div>
+    <div class="edu-meta">5 módulos · 2h 10min · Básico</div>
+    <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
+    <div style="margin-bottom:.8rem">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span>43% completado</span></div>
+      <div class="edu-prog-bar"><div style="width:43%"></div></div>
+    </div>
+    <a href="/educacion/curso/control-gastos" class="btn-p sm" style="width:100%;display:block;text-align:center">Continuar →</a>
+  </div>
+
+  <div class="edu-card premium" data-cat="cursos inversion">
+    <div class="edu-icon">📈</div>
+    <div class="edu-title">Inversión para Jóvenes</div>
+    <div class="edu-meta">6 módulos · 3h · Intermedio</div>
+    <span class="badge by" style="margin-bottom:.8rem">⭐ Premium</span>
+    <div><button class="btn-y sm" style="width:100%">Desbloquear →</button></div>
+  </div>
+
+  <div class="edu-card" data-cat="cursos deudas">
+    <div class="edu-icon">🚫</div>
+    <div class="edu-title">Cómo Salir de las Deudas</div>
+    <div class="edu-meta">4 módulos · 1h 30min · Básico</div>
+    <span class="badge bg" style="margin-bottom:.8rem">Gratis</span>
+    <div><a href="/educacion/curso/salir-deudas-curso" class="btn-p sm" style="width:100%;display:block;text-align:center">Comenzar →</a></div>
+  </div>
+
+  <div class="edu-card premium" data-cat="cursos inversion">
+    <div class="edu-icon">🏦</div>
+    <div class="edu-title">CETES y Deuda Gubernamental</div>
+    <div class="edu-meta">5 módulos · 2h · Avanzado</div>
+    <span class="badge by" style="margin-bottom:.8rem">⭐ Premium</span>
+    <div><button class="btn-y sm" style="width:100%">Desbloquear →</button></div>
+  </div>
+
+  <div class="edu-card" data-cat="cursos ahorro">
+    <div class="edu-icon">🎯</div>
+    <div class="edu-title">Método 50/30/20</div>
+    <div class="edu-meta">3 módulos · 45min · Básico</div>
+    <span class="badge bg" style="margin-bottom:.8rem">Gratis</span>
+    <div><a href="/educacion/curso/metodo-50-30-20" class="btn-p sm" style="width:100%;display:block;text-align:center">Comenzar →</a></div>
+  </div>
+
+</div>
+
+<!-- ARTÍCULOS -->
+<div class="card" id="secArticulos">
+  <div class="ctr">
+    <span class="ct">📰 Artículos de Educación Financiera</span>
+    <span style="font-size:12px;color:var(--m)"><%=Object.keys(articulos).length%> artículos disponibles</span>
+  </div>
+
+  <!-- Artículo 1 -->
+  <div class="art-card" data-cat="articulos ahorro">
+    <div class="art-img">💡</div>
+    <div style="flex:1">
+      <div class="art-title">5 hábitos para mejorar tu economía personal en 2025</div>
+      <div class="art-meta" style="margin-bottom:.5rem">Finanzas personales · 5 min de lectura</div>
+      <div class="art-body" id="prev-habitos">
+        Pequeños cambios diarios que pueden transformar tus finanzas sin necesidad de ganar más dinero...
+      </div>
+    </div>
+    <a href="/educacion/articulo/habitos-economia" class="btn-p sm" style="flex-shrink:0">Leer →</a>
+  </div>
+
+  <!-- Artículo 2 -->
+  <div class="art-card" data-cat="articulos inversion">
+    <div class="art-img">🏦</div>
+    <div style="flex:1">
+      <div class="art-title">¿Qué son los CETES y cómo invertir desde $100?</div>
+      <div class="art-meta" style="margin-bottom:.5rem">Inversión · 8 min de lectura</div>
+      <div class="art-body" id="prev-cetes">
+        Los CETES son la inversión más segura de México, respaldada por el Gobierno Federal. Aprende a invertir paso a paso...
+      </div>
+    </div>
+    <a href="/educacion/articulo/cetes-inversion" class="btn-p sm" style="flex-shrink:0">Leer →</a>
+  </div>
+
+  <!-- Artículo 3 -->
+  <div class="art-card" data-cat="articulos ahorro">
+    <div class="art-img">📐</div>
+    <div style="flex:1">
+      <div class="art-title">Regla del 50/30/20: la fórmula del presupuesto ideal</div>
+      <div class="art-meta" style="margin-bottom:.5rem">Ahorro · 6 min de lectura</div>
+      <div class="art-body" id="prev-5030">
+        Distribuye tus ingresos en necesidades, deseos y ahorro con esta sencilla fórmula usada por millones...
+      </div>
+    </div>
+    <a href="/educacion/articulo/regla-50-30-20" class="btn-p sm" style="flex-shrink:0">Leer →</a>
+  </div>
+
+  <!-- Artículo 4 -->
+  <div class="art-card" data-cat="articulos deudas">
+    <div class="art-img">💳</div>
+    <div style="flex:1">
+      <div class="art-title">Cómo salir de las deudas usando el método bola de nieve</div>
+      <div class="art-meta" style="margin-bottom:.5rem">Deudas · 7 min de lectura</div>
+      <div class="art-body" id="prev-deudas">
+        Una estrategia probada para liquidar deudas y recuperar tu libertad financiera, un paso a la vez...
+      </div>
+    </div>
+    <a href="/educacion/articulo/salir-deudas" class="btn-p sm" style="flex-shrink:0">Leer →</a>
+  </div>
+
+  <!-- Artículo 5 -->
+  <div class="art-card" data-cat="articulos inversion">
+    <div class="art-img">📊</div>
+    <div style="flex:1">
+      <div class="art-title">Fondos de inversión para principiantes en México</div>
+      <div class="art-meta" style="margin-bottom:.5rem">Inversión · 10 min de lectura</div>
+      <div class="art-body" id="prev-fondos">
+        Cómo hacer crecer tu dinero con fondos indexados y de bajo costo, desde $500 o menos...
+      </div>
+    </div>
+    <a href="/educacion/articulo/fondos-inversion" class="btn-p sm" style="flex-shrink:0">Leer →</a>
+  </div>
+
+</div>
+
+<!-- MI PROGRESO -->
+<div class="card mt">
+  <div class="ct">📈 Mi Progreso</div>
+  <div style="text-align:center;padding:1.5rem 0;color:var(--m)">
+    <div style="font-size:2rem;margin-bottom:.5rem">🎓</div>
+    <div style="font-size:13px;color:var(--m)">Completa cursos y lee artículos para ver tu progreso aquí.</div>
+  </div>
+</div>
+
+<script>
+var tabActual = 'todos';
+
+function setTab(el, cat) {
+  document.querySelectorAll('#tabsEdu .tab').forEach(function(t){ t.classList.remove('act'); });
+  el.classList.add('act');
+  tabActual = cat;
+  filtrarContenido(document.getElementById('searchEdu').value);
+}
+
+function filtrarContenido(q) {
+  var ql = q.toLowerCase();
+  document.querySelectorAll('#cursosGrid .edu-card').forEach(function(c) {
+    var cats = c.dataset.cat || '';
+    var matchTab = tabActual==='todos' || tabActual==='cursos' || cats.includes(tabActual);
+    var matchQ = !ql || c.textContent.toLowerCase().includes(ql);
+    c.style.display = matchTab && matchQ ? '' : 'none';
+  });
+  document.querySelectorAll('#secArticulos .art-card').forEach(function(c) {
+    var cats = c.dataset.cat || '';
+    var matchTab = tabActual==='todos' || tabActual==='articulos' || cats.includes(tabActual);
+    var matchQ = !ql || c.textContent.toLowerCase().includes(ql);
+    c.style.display = matchTab && matchQ ? '' : 'none';
+  });
+  var titCursos = document.getElementById('titCursos');
+  if(titCursos) titCursos.style.display = (tabActual==='articulos') ? 'none' : '';
+}
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,215 @@
+<%- include('partials/header', {titulo:'Presupuesto', usuario}) %>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">🎯 Presupuesto y Alertas</div>
+    <div class="page-sub">Controla tus límites de gasto por categoría · <%=new Date(anio,mes-1).toLocaleDateString('es-MX',{month:'long',year:'numeric'})%></div>
+  </div>
+  <button class="btn-p sm" onclick="openModal('modalAgregar')">+ Nuevo Límite</button>
+</div>
+
+<%if(ok){%><div class="a-ok" style="margin-bottom:1rem">✅ <%=ok%></div><%}%>
+<%if(error){%><div class="a-err" style="margin-bottom:1rem">⚠ <%=error%></div><%}%>
+
+<%if(presupuestos.length===0){%>
+<div class="card" style="text-align:center;padding:3.5rem">
+  <div style="font-size:3rem;margin-bottom:1rem">🎯</div>
+  <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--w);margin-bottom:.5rem">Sin límites de presupuesto</div>
+  <p class="muted" style="font-size:13px;margin-bottom:1.5rem">Agrega límites por categoría para controlar tus gastos.</p>
+  <button class="btn-p" onclick="openModal('modalAgregar')">+ Crear primer límite</button>
+</div>
+<%}else{%>
+
+<!-- TARJETAS DE CATEGORÍAS -->
+<div class="budget-grid">
+  <%presupuestos.forEach(function(p){
+    var lim = parseFloat(p.limite_monto);
+    var gas = parseFloat(p.gastado);
+    var pct = lim > 0 ? Math.round((gas/lim)*100) : 0;
+    var estado = pct>=100 ? 'over' : pct>=80 ? 'warn' : 'ok';
+    var col    = pct>=100 ? '#E53935' : pct>=80 ? '#F59E0B' : '#009EC5';
+    var label  = pct>=100 ? '🔴 Excedido' : pct>=80 ? '⚠ Alerta' : '✓ Normal';
+    var lbg    = pct>=100 ? 'rgba(229,57,53,.12)' : pct>=80 ? 'rgba(245,158,11,.12)' : 'rgba(0,158,197,.12)';
+  %>
+  <div class="budget-card <%=estado%>">
+    <div class="bcard-top">
+      <span class="bcard-name"><%=p.icono%> <%=p.nombre%></span>
+      <span class="bcard-status" style="background:<%=lbg%>;color:<%=col%>"><%=label%></span>
+    </div>
+    <div class="bcard-amounts">
+      $<%=gas.toLocaleString('es-MX',{minimumFractionDigits:2})%> gastado de $<%=lim.toLocaleString('es-MX',{minimumFractionDigits:2})%>
+    </div>
+    <div class="bprog"><div style="width:<%=Math.min(pct,100)%>%;background:<%=col%>"></div></div>
+    <div class="bcard-bottom">
+      <span class="bcard-pct" style="color:<%=col%>"><%=pct%>%</span>
+      <span class="muted" style="font-size:11px">
+        <%if(pct>=100){%><span style="color:#E53935">Excediste $<%=(gas-lim).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+        <%}else{%>$<%=(lim-gas).toLocaleString('es-MX',{minimumFractionDigits:2})%> restantes<%}%>
+      </span>
+    </div>
+    <div class="bcard-actions">
+      <button class="btn-g sm" onclick='openEdit(<%=JSON.stringify({id:p.id,nombre:p.nombre,icono:p.icono,limite:p.limite_monto})%>)'>✏️ Editar</button>
+      <a href="/movimientos?tipo=egreso" class="btn-g sm">📋 Historial</a>
+      <form method="POST" action="/presupuesto/eliminar/<%=p.id%>" style="display:inline" onsubmit="return confirm('¿Eliminar este límite?')">
+        <button type="submit" class="btn-icon d" title="Eliminar">🗑</button>
+      </form>
+    </div>
+  </div>
+  <%})%>
+
+  <!-- CARD AGREGAR -->
+  <div class="budget-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;cursor:pointer;border-style:dashed;opacity:.6" onclick="openModal('modalAgregar')">
+    <div style="font-size:2rem;color:var(--dk);margin-bottom:.5rem">+</div>
+    <div style="font-size:13px;color:var(--m)">Nueva categoría</div>
+  </div>
+</div>
+
+<!-- SECCIÓN INFERIOR -->
+<div style="display:grid;grid-template-columns:1fr 340px;gap:1.2rem;align-items:start">
+
+  <!-- PROGRESO GLOBAL + ESTADÍSTICAS -->
+  <div>
+    <div class="card mb">
+      <div class="ct">📈 Progreso Global del Presupuesto</div>
+      <div style="font-size:11px;color:var(--m);margin-bottom:.8rem;margin-top:-.5rem">
+        <%=new Date(anio,mes-1).toLocaleDateString('es-MX',{month:'long',year:'numeric'})%> · Límite total: $<%=parseFloat(totalLimite).toLocaleString('es-MX',{minimumFractionDigits:2})%>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:.4rem">
+        <span class="muted">Presupuesto total usado</span>
+        <span class="bold white"><%=pctGlobal%>% ($<%=parseFloat(totalGastado).toLocaleString('es-MX',{minimumFractionDigits:2})%> / $<%=parseFloat(totalLimite).toLocaleString('es-MX',{minimumFractionDigits:2})%>)</span>
+      </div>
+      <div style="height:14px;background:var(--b);border-radius:8px;overflow:hidden;margin-bottom:1.4rem">
+        <div style="height:100%;width:<%=Math.min(pctGlobal,100)%>%;background:<%=pctGlobal>=100?'#E53935':pctGlobal>=80?'#F59E0B':'#009EC5'%>;border-radius:8px;transition:width .6s"></div>
+      </div>
+
+      <!-- POR CATEGORÍA -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--m);letter-spacing:.07em;margin-bottom:.8rem">POR CATEGORÍA</div>
+          <%var colores=['#009EC5','#F59E0B','#E53935','#7C6FFF','#10B981','#FF9F40'];%>
+          <%presupuestos.forEach(function(p,i){
+            var pct2=parseFloat(p.limite_monto)>0?Math.min(Math.round((parseFloat(p.gastado)/parseFloat(p.limite_monto))*100),100):0;
+            var c2=pct2>=100?'#E53935':pct2>=80?'#F59E0B':colores[i%colores.length];
+          %>
+          <div class="prog-row" style="margin-bottom:.6rem">
+            <span class="prog-label" style="width:130px"><%=p.icono%> <%=p.nombre%></span>
+            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:<%=pct2%>%;background:<%=c2%>"></div></div>
+            <span class="prog-pct" style="color:<%=c2%>"><%=pct2%>%</span>
+          </div>
+          <%})%>
+          <div style="font-size:10px;color:var(--dk);margin-top:.6rem">Actualizado hace 2 min</div>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div>
+          <div style="font-size:11px;font-weight:700;color:var(--m);letter-spacing:.07em;margin-bottom:.8rem">ESTADÍSTICAS</div>
+          <div style="display:flex;flex-direction:column;gap:.7rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span class="muted">Promedio diario de gasto</span>
+              <span class="bold white">$<%=promedioDiario.toLocaleString('es-MX')%></span>
+            </div>
+            <div style="border-top:1px solid var(--b)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span class="muted">Gasto más alto del mes</span>
+              <span class="bold white">$<%=parseFloat(gastoMasAlto).toLocaleString('es-MX',{minimumFractionDigits:2})%></span>
+            </div>
+            <div style="border-top:1px solid var(--b)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span class="muted">Días transcurridos</span>
+              <span class="bold" style="color:#009EC5;font-size:1rem;font-family:'Syne',sans-serif"><%=diaActual%> / <%=new Date(anio,mes,0).getDate()%></span>
+            </div>
+            <div style="border-top:1px solid var(--b)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+              <span class="muted">Categorías en verde</span>
+              <span class="bold white"><%=categoriasVerde%> de <%=presupuestos.length%></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTRO DE ALERTAS -->
+  <div>
+    <div class="card">
+      <div class="ct">🔔 Centro de Alertas</div>
+      <%var alertasList=presupuestos.filter(function(p){return parseFloat(p.gastado)/parseFloat(p.limite_monto)>=0.8;});%>
+      <%if(alertasList.length===0){%>
+      <div class="ai aok">✅ Todo dentro del presupuesto</div>
+      <%}else{alertasList.forEach(function(a){
+        var pctA=Math.round((parseFloat(a.gastado)/parseFloat(a.limite_monto))*100);
+      %>
+      <div class="ai <%=pctA>=100?'ad':'aw'%>" style="margin-bottom:.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem">
+          <span style="font-size:12px"><strong><%=a.icono%> <%=a.nombre%> <%=pctA%>%</strong></span>
+          <span style="font-size:11px;color:<%=pctA>=100?'#E53935':'#F59E0B'%>"><%=pctA>=100?'⛔':'⚠'%></span>
+        </div>
+        <div style="font-size:11px;color:var(--m)">
+          $<%=parseFloat(a.gastado).toLocaleString('es-MX',{minimumFractionDigits:2})%>/$<%=parseFloat(a.limite_monto).toLocaleString('es-MX',{minimumFractionDigits:2})%>
+          <%if(pctA>=100){%> · <span style="color:#E53935">+$<%=(parseFloat(a.gastado)-parseFloat(a.limite_monto)).toLocaleString('es-MX',{minimumFractionDigits:2})%> extra</span><%}else{%> · Cuida tus gastos<%}%>
+        </div>
+      </div>
+      <%})}%>
+
+      <div style="border-top:1px solid var(--b);margin:1rem 0;padding-top:1rem">
+        <div style="font-size:11px;font-weight:700;color:var(--m);letter-spacing:.07em;margin-bottom:.8rem">CONFIGURAR ALERTAS</div>
+        <%[['Alerta al 75%',true],['Alerta al 90%',true],['Al superar límite',true],['Recordatorios',true],['Resumen semanal',false]].forEach(function(t){%>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem;font-size:13px">
+          <span class="muted"><%=t[0]%></span>
+          <label class="toggle-sw"><input type="checkbox" <%=t[1]?'checked':''%>><span class="toggle-track"></span></label>
+        </div>
+        <%})%>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%}%>
+
+<!-- MODAL AGREGAR -->
+<div class="modal" id="modalAgregar">
+  <div class="mbox" style="max-width:440px">
+    <div class="mh"><span>+ Nuevo Límite de Presupuesto</span><button class="mcl" onclick="closeModal('modalAgregar')">✕</button></div>
+    <form method="POST" action="/presupuesto/agregar" class="fg2" style="grid-template-columns:1fr">
+      <div class="fg">
+        <label>CATEGORÍA</label>
+        <select name="categoria_id" required>
+          <option value="">Selecciona una categoría</option>
+          <%categorias.forEach(function(c){%><option value="<%=c.id%>"><%=c.icono%> <%=c.nombre%></option><%})%>
+        </select>
+      </div>
+      <div class="fg"><label>LÍMITE MENSUAL ($)</label><input type="number" name="limite_monto" step="0.01" placeholder="0.00" required min="1"></div>
+      <input type="hidden" name="mes" value="<%=mes%>">
+      <input type="hidden" name="anio" value="<%=anio%>">
+      <div style="display:flex;gap:.6rem">
+        <button type="submit" class="btn-p" style="flex:1">💾 Guardar Límite</button>
+        <button type="button" class="btn-g" onclick="closeModal('modalAgregar')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal" id="modalEditar">
+  <div class="mbox" style="max-width:400px">
+    <div class="mh"><span id="editTitulo">✏️ Editar Límite</span><button class="mcl" onclick="closeModal('modalEditar')">✕</button></div>
+    <form method="POST" id="editForm" class="fg2" style="grid-template-columns:1fr">
+      <div class="fg"><label>NUEVO LÍMITE MENSUAL ($)</label><input type="number" name="limite_monto" id="editMonto" step="0.01" placeholder="0.00" required min="1"></div>
+      <div style="display:flex;gap:.6rem">
+        <button type="submit" class="btn-p" style="flex:1">💾 Actualizar</button>
+        <button type="button" class="btn-g" onclick="closeModal('modalEditar')">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEdit(p) {
+  document.getElementById('editForm').action = '/presupuesto/editar/' + p.id;
+  document.getElementById('editMonto').value = p.limite;
+  document.getElementById('editTitulo').textContent = '✏️ Editar — ' + p.icono + ' ' + p.nombre;
+  openModal('modalEditar');
+}
+</script>
+
+<%- include('partials/footer') %>
