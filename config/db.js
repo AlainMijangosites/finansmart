@@ -1,9 +1,9 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-console.log('DB DEBUG — MYSQL_URL:', process.env.MYSQL_URL ? 'SET' : 'NOT SET');
-console.log('DB DEBUG — MYSQLHOST:', process.env.MYSQLHOST || 'NOT SET');
-console.log('DB DEBUG — DB_HOST:', process.env.DB_HOST || 'NOT SET');
+console.log('DB DEBUG — MYSQL_URL exists:', 'MYSQL_URL' in process.env, '| length:', (process.env.MYSQL_URL||'').length);
+console.log('DB DEBUG — PORT:', process.env.PORT || 'NOT SET');
+console.log('DB DEBUG — SESSION_SECRET exists:', 'SESSION_SECRET' in process.env);
 
 let pool;
 
