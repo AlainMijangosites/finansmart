@@ -45,9 +45,8 @@ router.get('/', auth, async (req, res) => {
        FROM movimientos WHERE usuario_id=? AND fecha >= DATE_SUB(CURDATE(), INTERVAL 7 MONTH)
        GROUP BY YEAR(fecha), MONTH(fecha) ORDER BY anio, mes`, [uid]);
 
-    // User meta_ahorro setting
     const [[userData]] = await db.query(
-      `SELECT meta_ahorro FROM usuarios WHERE id=?`, [uid]);
+      `SELECT IFNULL(meta_ahorro, 20) AS meta_ahorro FROM usuarios WHERE id=?`, [uid]).catch(() => [[{meta_ahorro:20}]]);
     const metaAhorro = userData ? (userData.meta_ahorro || 20) : 20;
     const ing = parseFloat(resumen.ing), eg = parseFloat(resumen.eg);
     const tasaAhorro = ing > 0 ? Math.round(((ing - eg) / ing) * 100) : 0;
