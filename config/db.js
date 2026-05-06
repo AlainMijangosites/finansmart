@@ -1,6 +1,10 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
+console.log('DB DEBUG — MYSQL_URL:', process.env.MYSQL_URL ? 'SET' : 'NOT SET');
+console.log('DB DEBUG — MYSQLHOST:', process.env.MYSQLHOST || 'NOT SET');
+console.log('DB DEBUG — DB_HOST:', process.env.DB_HOST || 'NOT SET');
+
 let pool;
 
 if (process.env.MYSQL_URL) {
