@@ -230,6 +230,82 @@ const CURSOS = {
     ]}
   },
 
+  'inversion-jovenes': {
+    titulo:'Inversión para Jóvenes', icono:'📈', premium: true,
+    categoria:'Inversión', nivel:'Intermedio', duracion:'3h',
+    modulos:[
+      { titulo:'¿Por qué invertir desde joven?', contenido:[
+        {tipo:'p',texto:'El tiempo es el activo más valioso que tienes. Gracias al interés compuesto, $1,000 invertidos hoy a los 20 años valen muchísimo más que los mismos $1,000 invertidos a los 40.'},
+        {tipo:'tip',texto:'📊 Ejemplo: $500/mes durante 40 años al 9% = $2.3 millones. Los mismos $500/mes durante 20 años = $330,000. ¡La diferencia es empezar a tiempo!'},
+        {tipo:'p',texto:'Los jóvenes también tienen otra ventaja: pueden asumir más riesgo porque tienen tiempo para recuperarse de caídas del mercado. Esto les permite buscar mayor rendimiento.'},
+      ]},
+      { titulo:'Instrumentos de inversión para jóvenes', contenido:[
+        {tipo:'lista',items:['CETES Directo: sin comisiones, desde $100, ideal para empezar','GBM+: fondos indexados globales, bajo costo','Nu Inversiones: automático, fondos de deuda','BBVA Invest / Actinver: para quienes ya tienen más capital']},
+        {tipo:'p',texto:'Los fondos indexados son la opción más recomendada para jóvenes: diversificación instantánea, comisiones bajas y rendimiento históricamente superior al 90% de los fondos activos.'},
+        {tipo:'tip',texto:'💡 Regla: No pongas todo en un solo instrumento. Diversifica entre deuda (CETES) y renta variable (fondos indexados).'},
+      ]},
+      { titulo:'Cómo construir un portafolio desde cero', contenido:[
+        {tipo:'p',texto:'Un portafolio balanceado para un joven mexicano podría ser: 30% CETES/deuda (estabilidad), 50% fondos indexados globales (crecimiento), 20% acciones individuales si ya tienes experiencia.'},
+        {tipo:'tip',texto:'🚀 Empieza simple: abre CETES Directo esta semana, invierte $500 a 28 días. Cuando te sientas cómodo, agrega GBM+ para fondos indexados.'},
+      ]},
+      { titulo:'Errores comunes que debes evitar', contenido:[
+        {tipo:'lista',items:['Invertir dinero que puedes necesitar en menos de 6 meses','Poner todo en criptomonedas sin diversificar','Vender cuando el mercado baja (el error más caro)','Esperar el "momento perfecto" para invertir (no existe)','Invertir sin fondo de emergencia previo']},
+        {tipo:'tip',texto:'🧘 La clave: invierte una cantidad fija cada mes sin importar si el mercado sube o baja. Esta estrategia se llama Dollar Cost Averaging.'},
+      ]},
+      { titulo:'Metas financieras y horizonte de inversión', contenido:[
+        {tipo:'p',texto:'Define para qué estás invirtiendo antes de elegir instrumentos. Meta a 1 año: CETES o fondos de deuda. Meta a 3-5 años: mix de deuda y renta variable. Meta a +10 años: mayor proporción en renta variable.'},
+        {tipo:'tip',texto:'🎯 Ejercicio: Escribe 3 metas financieras con fecha y monto. Luego elige el instrumento correcto para cada una según el horizonte de tiempo.'},
+      ]},
+      { titulo:'Declaración de impuestos para inversionistas', contenido:[
+        {tipo:'p',texto:'En México, los rendimientos de inversión pueden causar ISR. CETES retienen el ISR automáticamente. Los fondos de inversión también. Si usas plataformas extranjeras (ETFs globales), debes declarar tú mismo.'},
+        {tipo:'tip',texto:'📋 Tip: Guarda todos los estados de cuenta de tus inversiones del año. Los necesitarás en la declaración anual de abril.'},
+      ]},
+    ],
+    examen:{ preguntas:[
+      {pregunta:'¿Por qué es ventajoso invertir desde joven?',opciones:['Los jóvenes tienen más dinero','El interés compuesto actúa por más tiempo, multiplicando el capital','Los jóvenes pagan menos impuestos','Las tasas son más altas para jóvenes'],correcta:1},
+      {pregunta:'¿Qué es el Dollar Cost Averaging?',opciones:['Invertir todo el dinero de una sola vez','Cambiar divisas frecuentemente','Invertir una cantidad fija cada mes sin importar el precio del mercado','Retirar ganancias mensualmente'],correcta:2},
+      {pregunta:'Para una meta de inversión a +10 años, ¿qué instrumento es más adecuado?',opciones:['CETES a 28 días','Cuenta de ahorro tradicional','Mayor proporción en renta variable (fondos indexados)','Efectivo en casa'],correcta:2},
+      {pregunta:'¿Cuál es el error más caro que puede cometer un inversionista?',opciones:['Diversificar demasiado','Vender cuando el mercado baja','Invertir en CETES','Usar fondos indexados'],correcta:1},
+      {pregunta:'¿Qué debes tener ANTES de invertir en renta variable?',opciones:['Un asesor financiero privado','Al menos $50,000 de capital','Tu fondo de emergencia completo','Una cuenta en dólares'],correcta:2},
+    ]}
+  },
+
+  'cetes-deuda': {
+    titulo:'CETES y Deuda Gubernamental', icono:'🏦', premium: true,
+    categoria:'Inversión', nivel:'Avanzado', duracion:'2h',
+    modulos:[
+      { titulo:'¿Qué son los instrumentos de deuda gubernamental?', contenido:[
+        {tipo:'p',texto:'El gobierno federal necesita financiarse para operar. Lo hace emitiendo títulos de deuda: CETES, BONOS, UDIBONOS y BONDES. Cuando los compras, le prestas dinero al gobierno y recibes intereses a cambio.'},
+        {tipo:'lista',items:['CETES: corto plazo (28, 91, 182, 364 días), tasa fija','BONOS: largo plazo (3, 5, 10, 20, 30 años), tasa fija semestral','UDIBONOS: protección contra inflación, rendimiento real garantizado','BONDES D: tasa variable ligada a TIIE']},
+      ]},
+      { titulo:'CETES a detalle: rendimiento y liquidez', contenido:[
+        {tipo:'p',texto:'Los CETES se emiten con descuento: compras a un precio menor a $10 (valor nominal) y recibes $10 al vencimiento. La diferencia es tu ganancia. Plataforma oficial: cetesdirecto.com.mx'},
+        {tipo:'tip',texto:'💰 Cálculo: Si compras un CETE a 28 días a $9.923 y recibes $10, tu ganancia es $0.077 por título (≈10% anual). Con $100,000 invertidos, ganas ~$770 en 28 días.'},
+        {tipo:'p',texto:'Ventajas: Sin comisiones, garantizados por el Estado, se pueden reinvertir automáticamente, disponibles desde $100. Desventaja: el ISR se retiene automáticamente.'},
+      ]},
+      { titulo:'Estrategias con deuda gubernamental', contenido:[
+        {tipo:'lista',items:['Escalera de CETES: distribuye tu inversión en varios plazos (28, 91, 182 días) para tener liquidez constante','CETES + Inflación: usa UDIBONOS si crees que la inflación subirá','Reinversión automática: actívala para que el capital e intereses se reinviertan solos','Diversificación: combina CETES (liquidez) con BONOS (mayor rendimiento a largo plazo)']},
+        {tipo:'tip',texto:'🔑 Estrategia recomendada para principiantes: 70% en CETES a 28 días (fondo de emergencia), 30% en CETES a 182 días (mayor tasa).'},
+      ]},
+      { titulo:'Riesgo y comparativa vs otras inversiones', contenido:[
+        {tipo:'p',texto:'Los CETES son prácticamente libres de riesgo crediticio (el gobierno mexicano no ha incumplido desde la crisis del 95). Sin embargo, tienen riesgo de tasa: si suben las tasas, los CETES nuevos ofrecen más.'},
+        {tipo:'lista',items:['CETES vs cuenta de ahorro bancaria: CETES ganan (sin comisiones, mayor tasa)','CETES vs fondos de deuda: CETES ganan en transparencia y costo','CETES vs fondos indexados: fondos indexados ganan a largo plazo pero con más riesgo','CETES vs criptomonedas: CETES son estables, cripto es especulativo']},
+      ]},
+      { titulo:'Declaración de impuestos y CETES', contenido:[
+        {tipo:'p',texto:'Los CETES retienen automáticamente el ISR sobre los intereses. La tasa de retención provisional es del 0.15% sobre el capital (aproximadamente, ajustada anualmente por el SAT).'},
+        {tipo:'p',texto:'En tu declaración anual de abril, los intereses de CETES van en la sección "Intereses". CETES Directo te proporciona una constancia de retenciones cada año para facilitar tu declaración.'},
+        {tipo:'tip',texto:'📋 Descarga tu constancia de retenciones de cetesdirecto.com.mx cada enero. La necesitarás para tu declaración anual del SAT.'},
+      ]},
+    ],
+    examen:{ preguntas:[
+      {pregunta:'¿Qué son los CETES?',opciones:['Acciones del gobierno mexicano','Certificados de la Tesorería: títulos de deuda a corto plazo del gobierno federal','Fondos de inversión privados','Cuentas de ahorro gubernamentales'],correcta:1},
+      {pregunta:'¿Cómo generan rendimiento los CETES?',opciones:['Pagan dividendos trimestrales','Se compran con descuento y se cobran a valor nominal al vencimiento','El gobierno paga intereses mensuales directamente','Suben de precio como las acciones'],correcta:1},
+      {pregunta:'¿Qué instrumento protege contra la inflación?',opciones:['CETES a 28 días','BONDES D','UDIBONOS','Ninguno de los anteriores'],correcta:2},
+      {pregunta:'¿Qué es la estrategia de "escalera de CETES"?',opciones:['Invertir todo en el plazo más largo disponible','Distribuir inversión en varios plazos para mantener liquidez constante','Reinvertir solo cuando las tasas suben','Comprar CETES y venderlos antes de su vencimiento'],correcta:1},
+      {pregunta:'¿Cómo se manejan los impuestos de los CETES?',opciones:['No pagan impuestos al ser inversión gubernamental','El inversor los declara manualmente sin retención','Se retiene ISR automáticamente en cada inversión','Solo se pagan impuestos si superas $100,000 de rendimiento'],correcta:2},
+    ]}
+  },
+
   'metodo-50-30-20': {
     titulo:'Método 50/30/20', icono:'🎯',
     categoria:'Ahorro', nivel:'Básico', duracion:'45min',
@@ -279,6 +355,8 @@ router.get('/articulo/:slug', auth, (req, res) => {
 router.get('/curso/:slug', auth, (req, res) => {
   const curso = CURSOS[req.params.slug];
   if (!curso) return res.redirect('/educacion');
+  if (curso.premium && req.session.usuario.plan !== 'premium')
+    return res.redirect('/educacion?upgrade=1');
   res.render('educacion_curso', { usuario: req.session.usuario, curso, slug: req.params.slug });
 });
 

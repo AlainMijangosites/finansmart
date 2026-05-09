@@ -69,7 +69,13 @@
     <div class="edu-title">Inversión para Jóvenes</div>
     <div class="edu-meta">6 módulos · 3h · Intermedio</div>
     <span class="badge by" style="margin-bottom:.8rem">⭐ Premium</span>
-    <div><button class="btn-y sm" style="width:100%">Desbloquear →</button></div>
+    <div>
+      <%if(usuario.plan==='premium'){%>
+        <a href="/educacion/curso/inversion-jovenes" class="btn-y sm" style="width:100%;display:block;text-align:center">Comenzar →</a>
+      <%}else{%>
+        <button class="btn-y sm" style="width:100%" onclick="openModal('modalUpgrade')">🔒 Desbloquear →</button>
+      <%}%>
+    </div>
   </div>
 
   <div class="edu-card" data-cat="cursos deudas">
@@ -85,7 +91,13 @@
     <div class="edu-title">CETES y Deuda Gubernamental</div>
     <div class="edu-meta">5 módulos · 2h · Avanzado</div>
     <span class="badge by" style="margin-bottom:.8rem">⭐ Premium</span>
-    <div><button class="btn-y sm" style="width:100%">Desbloquear →</button></div>
+    <div>
+      <%if(usuario.plan==='premium'){%>
+        <a href="/educacion/curso/cetes-deuda" class="btn-y sm" style="width:100%;display:block;text-align:center">Comenzar →</a>
+      <%}else{%>
+        <button class="btn-y sm" style="width:100%" onclick="openModal('modalUpgrade')">🔒 Desbloquear →</button>
+      <%}%>
+    </div>
   </div>
 
   <div class="edu-card" data-cat="cursos ahorro">
@@ -181,6 +193,20 @@
   </div>
 </div>
 
+<!-- MODAL UPGRADE PREMIUM -->
+<div class="modal" id="modalUpgrade">
+  <div class="mbox" style="max-width:420px;text-align:center">
+    <div class="mh"><span style="color:#FFD166">⭐ Contenido Premium</span><button class="mcl" onclick="closeModal('modalUpgrade')">✕</button></div>
+    <div style="font-size:2.5rem;margin:1rem 0">🔒</div>
+    <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--w);margin-bottom:.6rem">Este curso es exclusivo Premium</div>
+    <p style="font-size:13px;color:var(--m);margin-bottom:1.4rem">Mejora tu plan para desbloquear todos los cursos avanzados, incluyendo Inversión para Jóvenes y CETES y Deuda Gubernamental.</p>
+    <div style="display:flex;flex-direction:column;gap:.7rem">
+      <a href="/perfil" class="btn-p" style="text-align:center">⬆ Mejorar a Premium</a>
+      <button class="btn-g" onclick="closeModal('modalUpgrade')">Ahora no</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var tabActual = 'todos';
 
@@ -207,6 +233,10 @@ function filtrarContenido(q) {
   });
   var titCursos = document.getElementById('titCursos');
   if(titCursos) titCursos.style.display = (tabActual==='articulos') ? 'none' : '';
+}
+
+if (new URLSearchParams(window.location.search).get('upgrade') === '1') {
+  openModal('modalUpgrade');
 }
 </script>
 

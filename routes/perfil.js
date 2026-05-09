@@ -78,6 +78,20 @@ router.post('/password', auth, async (req, res) => {
   }
 });
 
+router.post('/premium', auth, async (req, res) => {
+  const uid = req.session.usuario.id;
+  try {
+    await db.query(`ALTER TABLE usuarios ADD COLUMN plan VARCHAR(20) DEFAULT 'gratuito'`).catch(()=>{});
+    await db.query('UPDATE usuarios SET plan=? WHERE id=?', ['premium', uid]);
+    req.session.usuario.plan = 'premium';
+    const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
+    res.render('perfil', { usuario:req.session.usuario, datos, ok:'⭐ ¡Bienvenido a Premium! Ya tienes acceso a todos los cursos.', error:null });
+  } catch(e) {
+    const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
+    res.render('perfil', { usuario:req.session.usuario, datos, ok:null, error:'Error al activar premium: '+e.message });
+  }
+});
+
 router.post('/eliminar', auth, async (req, res) => {
   const uid = req.session.usuario.id;
   try {
