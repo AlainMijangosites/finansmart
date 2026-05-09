@@ -145,6 +145,15 @@ function calificar(correctas) {
   var pct = Math.round((aciertos/total)*100);
   var res = document.getElementById('resultado');
   res.style.display = 'block';
+
+  // Guardar progreso en servidor
+  fetch('/educacion/progreso', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    credentials: 'same-origin',
+    body: JSON.stringify({ slug: '<%=slug%>', porcentaje: pct, completado: pct >= 70 })
+  });
+
   if (pct >= 70) {
     res.innerHTML = '<div style="background:rgba(0,158,197,.08);border:1px solid rgba(0,158,197,.3);border-radius:12px;padding:1.2rem;text-align:center">' +
       '<div style="font-size:2rem;margin-bottom:.4rem">🏆</div>' +

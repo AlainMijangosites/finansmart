@@ -1,6 +1,17 @@
 const express = require('express');
 const router  = express.Router();
+const db      = require('../config/db');
 const auth = (req,res,next) => req.session.usuario ? next() : res.redirect('/login');
+
+// Crear tabla de progreso si no existe
+db.query(`CREATE TABLE IF NOT EXISTS progreso_cursos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  curso_slug VARCHAR(60) NOT NULL,
+  porcentaje INT DEFAULT 0,
+  completado TINYINT(1) DEFAULT 0,
+  UNIQUE KEY unico (usuario_id, curso_slug)
+)`).catch(()=>{});
 
 // ── ARTÍCULOS ────────────────────────────────────────────────────────────────
 const ARTICULOS = {
@@ -342,8 +353,12 @@ const CURSOS = {
 };
 
 // ── RUTAS ────────────────────────────────────────────────────────────────────
-router.get('/', auth, (req, res) => {
-  res.render('educacion', { usuario: req.session.usuario, articulos: ARTICULOS, cursos: CURSOS });
+router.get('/', auth, async (req, res) => {
+  const uid = req.session.usuario.id;
+  const [rows] = await db.query('SELECT curso_slug, porcentaje, completado FROM progreso_cursos WHERE usuario_id=?', [uid]);
+  const progreso = {};
+  rows.forEach(r => { progreso[r.curso_slug] = { porcentaje: r.porcentaje, completado: r.completado }; });
+  res.render('educacion', { usuario: req.session.usuario, articulos: ARTICULOS, cursos: CURSOS, progreso });
 });
 
 router.get('/articulo/:slug', auth, (req, res) => {
@@ -352,12 +367,30 @@ router.get('/articulo/:slug', auth, (req, res) => {
   res.render('educacion_articulo', { usuario: req.session.usuario, art, slug: req.params.slug, articulos: ARTICULOS });
 });
 
-router.get('/curso/:slug', auth, (req, res) => {
+router.get('/curso/:slug', auth, async (req, res) => {
   const curso = CURSOS[req.params.slug];
   if (!curso) return res.redirect('/educacion');
   if (curso.premium && req.session.usuario.plan !== 'premium')
     return res.redirect('/educacion?upgrade=1');
-  res.render('educacion_curso', { usuario: req.session.usuario, curso, slug: req.params.slug });
+  const uid = req.session.usuario.id;
+  // Marcar como iniciado si no existe registro
+  await db.query(
+    'INSERT IGNORE INTO progreso_cursos (usuario_id, curso_slug, porcentaje) VALUES (?,?,?)',
+    [uid, req.params.slug, 5]
+  );
+  const [[prog]] = await db.query('SELECT porcentaje, completado FROM progreso_cursos WHERE usuario_id=? AND curso_slug=?', [uid, req.params.slug]);
+  res.render('educacion_curso', { usuario: req.session.usuario, curso, slug: req.params.slug, progreso: prog });
+});
+
+router.post('/progreso', auth, async (req, res) => {
+  const uid = req.session.usuario.id;
+  const { slug, porcentaje, completado } = req.body;
+  if (!CURSOS[slug]) return res.json({ ok: false });
+  await db.query(
+    'INSERT INTO progreso_cursos (usuario_id, curso_slug, porcentaje, completado) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE porcentaje=VALUES(porcentaje), completado=VALUES(completado)',
+    [uid, slug, porcentaje, completado ? 1 : 0]
+  );
+  res.json({ ok: true });
 });
 
 module.exports = router;

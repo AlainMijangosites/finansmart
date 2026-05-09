@@ -21,12 +21,14 @@
       <div style="font-size:12px;color:rgba(255,255,255,.65);margin-bottom:.7rem">6 módulos · 2h 30min · Nivel básico · Gratis</div>
       <div style="display:flex;align-items:center;gap:.8rem">
         <div style="flex:1;max-width:220px">
-          <div style="height:5px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden"><div style="width:65%;height:100%;background:#009EC5;border-radius:3px"></div></div>
+          <div style="height:5px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden"><div style="width:<%=(progreso['finanzas-principiantes']?progreso['finanzas-principiantes'].porcentaje:0)%>%;height:100%;background:#009EC5;border-radius:3px"></div></div>
         </div>
-        <span style="font-size:12px;color:#009EC5;font-weight:700">65% completado</span>
+        <%if(progreso['finanzas-principiantes']){%>
+        <span style="font-size:12px;color:#009EC5;font-weight:700"><%=progreso['finanzas-principiantes'].porcentaje%>% <%=progreso['finanzas-principiantes'].completado?'completado':'en curso'%></span>
+        <%}%>
       </div>
     </div>
-    <a href="/educacion/curso/finanzas-principiantes" class="btn-p sm">Continuar curso →</a>
+    <a href="/educacion/curso/finanzas-principiantes" class="btn-p sm"><%=progreso['finanzas-principiantes']?'Continuar curso →':'Comenzar curso →'%></a>
   </div>
 </div>
 
@@ -48,8 +50,14 @@
     <div class="edu-icon">💰</div>
     <div class="edu-title">Ahorro e Inversión Básica</div>
     <div class="edu-meta">4 módulos · 1h 45min · Básico</div>
-    <span class="badge bg" style="margin-bottom:.8rem">Gratis</span>
-    <div><a href="/educacion/curso/ahorro-inversion-basica" class="btn-p sm" style="width:100%;display:block;text-align:center">Comenzar →</a></div>
+    <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
+    <%if(progreso['ahorro-inversion-basica']){var p=progreso['ahorro-inversion-basica'];%>
+    <div style="margin-bottom:.8rem">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
+      <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+    </div>
+    <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
+    <a href="/educacion/curso/ahorro-inversion-basica" class="btn-p sm" style="width:100%;display:block;text-align:center"><%=progreso['ahorro-inversion-basica']?'Continuar →':'Comenzar →'%></a>
   </div>
 
   <div class="edu-card" data-cat="cursos ahorro">
@@ -57,11 +65,13 @@
     <div class="edu-title">Control de Gastos Diarios</div>
     <div class="edu-meta">5 módulos · 2h 10min · Básico</div>
     <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
+    <%if(progreso['control-gastos']){var p=progreso['control-gastos'];%>
     <div style="margin-bottom:.8rem">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span>43% completado</span></div>
-      <div class="edu-prog-bar"><div style="width:43%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
+      <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
     </div>
-    <a href="/educacion/curso/control-gastos" class="btn-p sm" style="width:100%;display:block;text-align:center">Continuar →</a>
+    <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
+    <a href="/educacion/curso/control-gastos" class="btn-p sm" style="width:100%;display:block;text-align:center"><%=progreso['control-gastos']?'Continuar →':'Comenzar →'%></a>
   </div>
 
   <div class="edu-card premium" data-cat="cursos inversion">
@@ -82,8 +92,14 @@
     <div class="edu-icon">🚫</div>
     <div class="edu-title">Cómo Salir de las Deudas</div>
     <div class="edu-meta">4 módulos · 1h 30min · Básico</div>
-    <span class="badge bg" style="margin-bottom:.8rem">Gratis</span>
-    <div><a href="/educacion/curso/salir-deudas-curso" class="btn-p sm" style="width:100%;display:block;text-align:center">Comenzar →</a></div>
+    <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
+    <%if(progreso['salir-deudas-curso']){var p=progreso['salir-deudas-curso'];%>
+    <div style="margin-bottom:.8rem">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
+      <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+    </div>
+    <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
+    <a href="/educacion/curso/salir-deudas-curso" class="btn-p sm" style="width:100%;display:block;text-align:center"><%=progreso['salir-deudas-curso']?'Continuar →':'Comenzar →'%></a>
   </div>
 
   <div class="edu-card premium" data-cat="cursos inversion">
@@ -104,8 +120,14 @@
     <div class="edu-icon">🎯</div>
     <div class="edu-title">Método 50/30/20</div>
     <div class="edu-meta">3 módulos · 45min · Básico</div>
-    <span class="badge bg" style="margin-bottom:.8rem">Gratis</span>
-    <div><a href="/educacion/curso/metodo-50-30-20" class="btn-p sm" style="width:100%;display:block;text-align:center">Comenzar →</a></div>
+    <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
+    <%if(progreso['metodo-50-30-20']){var p=progreso['metodo-50-30-20'];%>
+    <div style="margin-bottom:.8rem">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
+      <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+    </div>
+    <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
+    <a href="/educacion/curso/metodo-50-30-20" class="btn-p sm" style="width:100%;display:block;text-align:center"><%=progreso['metodo-50-30-20']?'Continuar →':'Comenzar →'%></a>
   </div>
 
 </div>
