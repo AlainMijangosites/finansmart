@@ -4,10 +4,10 @@ const db      = require('../config/db');
 const router  = express.Router();
 
 // Agregar columnas faltantes si no existen
-db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS rol VARCHAR(20) DEFAULT 'usuario'`).catch(()=>{});
-db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS meta_ahorro DECIMAL(5,2) DEFAULT 20`).catch(()=>{});
-db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ingreso_mensual DECIMAL(12,2) DEFAULT 0`).catch(()=>{});
-db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS reset_token VARCHAR(100) DEFAULT NULL`).catch(()=>{});
+db.query(`ALTER TABLE usuarios ADD COLUMN rol VARCHAR(20) DEFAULT 'usuario'`).catch(()=>{});
+db.query(`ALTER TABLE usuarios ADD COLUMN meta_ahorro DECIMAL(5,2) DEFAULT 20`).catch(()=>{});
+db.query(`ALTER TABLE usuarios ADD COLUMN ingreso_mensual DECIMAL(12,2) DEFAULT 0`).catch(()=>{});
+db.query(`ALTER TABLE usuarios ADD COLUMN reset_token VARCHAR(100) DEFAULT NULL`).catch(()=>{});
 
 router.get('/login',    (req, res) => { if(req.session.usuario) return res.redirect('/dashboard'); res.render('login', {error:null}); });
 router.get('/registro', (req, res) => { if(req.session.usuario) return res.redirect('/dashboard'); res.render('registro', {error:null}); });

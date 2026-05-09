@@ -5,18 +5,11 @@ const db      = require('../config/db');
 const router  = express.Router();
 const auth = (req,res,next) => req.session.usuario ? next() : res.redirect('/login');
 
-// Asegurar columnas y tipo correcto para foto_perfil (MEDIUMTEXT para base64)
+// Migraciones compatibles con MySQL (no MariaDB): ignorar ER_DUP_FIELDNAME si ya existe
 (async () => {
-  try {
-    await db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ingreso_mensual DECIMAL(12,2) DEFAULT 0`);
-  } catch(e) {}
-  try {
-    await db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS foto_perfil MEDIUMTEXT DEFAULT NULL`);
-  } catch(e) {}
-  try {
-    // Cambiar a MEDIUMTEXT si sigue siendo VARCHAR
-    await db.query(`ALTER TABLE usuarios MODIFY COLUMN foto_perfil MEDIUMTEXT DEFAULT NULL`);
-  } catch(e) {}
+  try { await db.query(`ALTER TABLE usuarios ADD COLUMN ingreso_mensual DECIMAL(12,2) DEFAULT 0`); } catch(e) {}
+  try { await db.query(`ALTER TABLE usuarios ADD COLUMN foto_perfil MEDIUMTEXT DEFAULT NULL`); } catch(e) {}
+  try { await db.query(`ALTER TABLE usuarios MODIFY COLUMN foto_perfil MEDIUMTEXT DEFAULT NULL`); } catch(e) {}
 })();
 
 // Multer — guarda en memoria para convertir a base64
