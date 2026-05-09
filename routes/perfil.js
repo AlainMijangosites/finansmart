@@ -1,33 +1,21 @@
 const express = require('express');
 const bcrypt  = require('bcryptjs');
 const multer  = require('multer');
-const path    = require('path');
-const fs      = require('fs');
 const db      = require('../config/db');
 const router  = express.Router();
 const auth = (req,res,next) => req.session.usuario ? next() : res.redirect('/login');
 
 db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ingreso_mensual DECIMAL(12,2) DEFAULT 0`).catch(()=>{});
-db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS foto_perfil VARCHAR(255) DEFAULT NULL`).catch(()=>{});
+db.query(`ALTER TABLE usuarios MODIFY COLUMN foto_perfil MEDIUMTEXT DEFAULT NULL`).catch(()=>{});
+db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS foto_perfil MEDIUMTEXT DEFAULT NULL`).catch(()=>{});
 
-// Multer — guarda en public/uploads/avatars/
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../public/uploads/avatars');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `avatar-${req.session.usuario.id}${ext}`);
-  }
-});
+// Multer — guarda en memoria para convertir a base64
 const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
-    cb(null, allowed.includes(path.extname(file.originalname).toLowerCase()));
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    cb(null, allowed.includes(file.mimetype));
   }
 });
 
@@ -40,9 +28,9 @@ router.post('/foto', auth, upload.single('foto'), async (req, res) => {
   const uid = req.session.usuario.id;
   try {
     if (!req.file) throw new Error('No se seleccionó ninguna imagen o el formato no es válido (JPG, PNG, WEBP).');
-    const ruta = `/uploads/avatars/${req.file.filename}`;
-    await db.query('UPDATE usuarios SET foto_perfil=? WHERE id=?', [ruta, uid]);
-    req.session.usuario.foto_perfil = ruta;
+    const base64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    await db.query('UPDATE usuarios SET foto_perfil=? WHERE id=?', [base64, uid]);
+    req.session.usuario.foto_perfil = base64;
     const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
     res.render('perfil', { usuario:req.session.usuario, datos, ok:'✅ Foto de perfil actualizada', error:null });
   } catch(e) {
