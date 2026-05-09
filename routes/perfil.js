@@ -38,15 +38,14 @@ router.get('/', auth, async (req, res) => {
 router.post('/foto', auth, upload.single('foto'), async (req, res) => {
   const uid = req.session.usuario.id;
   try {
-    if (!req.file) throw new Error('No se seleccionó ninguna imagen o el formato no es válido (JPG, PNG, WEBP).');
+    if (!req.file) return res.status(400).json({ error: 'Archivo inválido o no seleccionado.' });
     const base64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
     await db.query('UPDATE usuarios SET foto_perfil=? WHERE id=?', [base64, uid]);
     req.session.usuario.foto_perfil = base64;
-    const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
-    res.render('perfil', { usuario:req.session.usuario, datos, ok:'✅ Foto de perfil actualizada', error:null });
+    res.json({ ok: true });
   } catch(e) {
-    const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
-    res.render('perfil', { usuario:req.session.usuario, datos, ok:null, error:e.message });
+    console.error('Error guardando foto:', e.message);
+    res.status(500).json({ error: e.message });
   }
 });
 
