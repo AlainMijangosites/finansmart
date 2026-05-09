@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
     const [rows] = await db.query('SELECT * FROM usuarios WHERE correo=? AND activo=1', [correo]);
     if (!rows.length || !(await bcrypt.compare(contrasena, rows[0].contrasena)))
       return res.render('login', { error: 'Correo o contraseña incorrectos' });
-    req.session.usuario = { id:rows[0].id, nombre:rows[0].nombre, apellidos:rows[0].apellidos, correo:rows[0].correo, plan:rows[0].plan, rol:rows[0].rol||'usuario' };
+    req.session.usuario = { id:rows[0].id, nombre:rows[0].nombre, apellidos:rows[0].apellidos, correo:rows[0].correo, plan:rows[0].plan, rol:rows[0].rol||'usuario', foto_perfil:rows[0].foto_perfil||null };
     res.redirect('/dashboard');
   } catch(e) { res.render('login', { error: 'Error del servidor' }); }
 });

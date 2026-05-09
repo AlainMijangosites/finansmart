@@ -32,7 +32,11 @@
     <a href="/logout"       class="ni danger"><span class="ni-l"><i>🚪</i> Cerrar sesión</span></a>
   </nav>
   <div class="sb-user">
-    <div class="ua">👤</div>
+    <% if(usuario.foto_perfil){ %>
+      <img src="<%=usuario.foto_perfil%>" class="ua" style="object-fit:cover;border-radius:50%">
+    <% } else { %>
+      <div class="ua">👤</div>
+    <% } %>
     <div>
       <div class="un"><%= usuario.nombre %> <%= usuario.apellidos %></div>
       <div class="up"><%= usuario.plan==='premium'?'⭐ Premium':'Plan Gratuito' %> <a href="/perfil" style="color:var(--g);font-size:9px;margin-left:.3rem">→</a></div>
@@ -51,7 +55,11 @@
         <input type="text" placeholder="Buscar movimiento..." id="globalSearch">
       </div>
       <a href="/perfil" class="tb-u">
-        <span>👤</span>
+        <% if(usuario.foto_perfil){ %>
+          <img src="<%=usuario.foto_perfil%>" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
+        <% } else { %>
+          <span>👤</span>
+        <% } %>
         <span><%= usuario.nombre %></span>
         <span class="badge bgr"><%= usuario.plan==='premium'?'⭐ Premium':'Gratuito' %></span>
       </a>

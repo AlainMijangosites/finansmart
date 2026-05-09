@@ -1,16 +1,54 @@
 const express = require('express');
 const bcrypt  = require('bcryptjs');
+const multer  = require('multer');
+const path    = require('path');
+const fs      = require('fs');
 const db      = require('../config/db');
 const router  = express.Router();
 const auth = (req,res,next) => req.session.usuario ? next() : res.redirect('/login');
 
-// Ensure ingreso_mensual column exists
-db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ingreso_mensual DECIMAL(12,2) DEFAULT 0`)
-  .catch(() => {}); // Silently ignore if already exists
+db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ingreso_mensual DECIMAL(12,2) DEFAULT 0`).catch(()=>{});
+db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS foto_perfil VARCHAR(255) DEFAULT NULL`).catch(()=>{});
+
+// Multer — guarda en public/uploads/avatars/
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, '../public/uploads/avatars');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `avatar-${req.session.usuario.id}${ext}`);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
+    cb(null, allowed.includes(path.extname(file.originalname).toLowerCase()));
+  }
+});
 
 router.get('/', auth, async (req, res) => {
   const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [req.session.usuario.id]);
   res.render('perfil', { usuario:req.session.usuario, datos, ok:null, error:null });
+});
+
+router.post('/foto', auth, upload.single('foto'), async (req, res) => {
+  const uid = req.session.usuario.id;
+  try {
+    if (!req.file) throw new Error('No se seleccionó ninguna imagen o el formato no es válido (JPG, PNG, WEBP).');
+    const ruta = `/uploads/avatars/${req.file.filename}`;
+    await db.query('UPDATE usuarios SET foto_perfil=? WHERE id=?', [ruta, uid]);
+    req.session.usuario.foto_perfil = ruta;
+    const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
+    res.render('perfil', { usuario:req.session.usuario, datos, ok:'✅ Foto de perfil actualizada', error:null });
+  } catch(e) {
+    const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
+    res.render('perfil', { usuario:req.session.usuario, datos, ok:null, error:e.message });
+  }
 });
 
 router.post('/actualizar', auth, async (req, res) => {
