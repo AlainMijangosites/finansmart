@@ -88,18 +88,24 @@
     </div>
   </div>
 
-  <div class="edu-card" data-cat="cursos deudas">
+  <div class="edu-card premium" data-cat="cursos deudas">
     <div class="edu-icon">🚫</div>
     <div class="edu-title">Cómo Salir de las Deudas</div>
     <div class="edu-meta">4 módulos · 1h 30min · Básico</div>
-    <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
-    <%if(progreso['salir-deudas-curso']){var p=progreso['salir-deudas-curso'];%>
-    <div style="margin-bottom:.8rem">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
-      <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+    <span class="badge by" style="margin-bottom:.8rem">⭐ Premium</span>
+    <div>
+      <%if(usuario.plan==='premium'){%>
+        <%if(progreso['salir-deudas-curso']){var p=progreso['salir-deudas-curso'];%>
+        <div style="margin-bottom:.8rem">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
+          <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+        </div>
+        <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
+        <a href="/educacion/curso/salir-deudas-curso" class="btn-y sm" style="width:100%;display:block;text-align:center"><%=progreso['salir-deudas-curso']?'Continuar →':'Comenzar →'%></a>
+      <%}else{%>
+        <button class="btn-y sm" style="width:100%" onclick="openModal('modalUpgrade')">🔒 Desbloquear →</button>
+      <%}%>
     </div>
-    <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
-    <a href="/educacion/curso/salir-deudas-curso" class="btn-p sm" style="width:100%;display:block;text-align:center"><%=progreso['salir-deudas-curso']?'Continuar →':'Comenzar →'%></a>
   </div>
 
   <div class="edu-card premium" data-cat="cursos inversion">
@@ -116,18 +122,24 @@
     </div>
   </div>
 
-  <div class="edu-card" data-cat="cursos ahorro">
+  <div class="edu-card premium" data-cat="cursos ahorro">
     <div class="edu-icon">🎯</div>
     <div class="edu-title">Método 50/30/20</div>
     <div class="edu-meta">3 módulos · 45min · Básico</div>
-    <span class="badge bg" style="margin-bottom:.6rem">Gratis</span>
-    <%if(progreso['metodo-50-30-20']){var p=progreso['metodo-50-30-20'];%>
-    <div style="margin-bottom:.8rem">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
-      <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+    <span class="badge by" style="margin-bottom:.8rem">⭐ Premium</span>
+    <div>
+      <%if(usuario.plan==='premium'){%>
+        <%if(progreso['metodo-50-30-20']){var p=progreso['metodo-50-30-20'];%>
+        <div style="margin-bottom:.8rem">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:.25rem"><span><%=p.porcentaje%>% <%=p.completado?'completado':'en curso'%></span></div>
+          <div class="edu-prog-bar"><div style="width:<%=p.porcentaje%>%"></div></div>
+        </div>
+        <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
+        <a href="/educacion/curso/metodo-50-30-20" class="btn-y sm" style="width:100%;display:block;text-align:center"><%=progreso['metodo-50-30-20']?'Continuar →':'Comenzar →'%></a>
+      <%}else{%>
+        <button class="btn-y sm" style="width:100%" onclick="openModal('modalUpgrade')">🔒 Desbloquear →</button>
+      <%}%>
     </div>
-    <%}else{%><div style="margin-bottom:.8rem"></div><%}%>
-    <a href="/educacion/curso/metodo-50-30-20" class="btn-p sm" style="width:100%;display:block;text-align:center"><%=progreso['metodo-50-30-20']?'Continuar →':'Comenzar →'%></a>
   </div>
 
 </div>
