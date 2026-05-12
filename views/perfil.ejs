@@ -1,5 +1,20 @@
 <%- include('partials/header', {titulo:'Perfil', usuario}) %>
 
+<%if(locals.upgrade){%>
+<div style="background:linear-gradient(135deg,rgba(255,209,102,.15),rgba(255,209,102,.05));border:1px solid rgba(255,209,102,.4);border-radius:16px;padding:1.2rem 1.4rem;margin-bottom:1.4rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+  <div style="font-size:2rem">⭐</div>
+  <div style="flex:1">
+    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#FFD166;margin-bottom:.3rem">Esta función es exclusiva de Premium</div>
+    <div style="font-size:13px;color:var(--m)">Exportar PDF y Excel, historial completo, metas ilimitadas, presupuestos ilimitados y cursos avanzados.</div>
+  </div>
+  <%if(datos.plan!=='premium'){%>
+  <form method="POST" action="/perfil/premium" style="flex-shrink:0">
+    <button type="submit" class="btn-p" style="background:linear-gradient(135deg,#FFD166,#f59e0b);color:#0D1B2A;font-weight:800">⭐ Activar Premium ahora</button>
+  </form>
+  <%}%>
+</div>
+<%}%>
+
 <!-- CAJA DE INGRESO MENSUAL (destacada) -->
 <div class="income-card mb">
   <div class="income-card-label">INGRESO MENSUAL ESTIMADO</div>
@@ -39,10 +54,16 @@
     <%if(datos.ocupacion){%><div style="font-size:12px;color:var(--m)">💼 <%=datos.ocupacion%></div><%}%>
     <span class="badge <%=datos.plan==='premium'?'by':'bgr'%>"><%=datos.plan==='premium'?'⭐ Premium':'Plan Gratuito'%></span>
     <%if(datos.plan==='premium'){%>
-      <div class="badge by mt" style="width:100%;text-align:center;padding:.6rem">⭐ Plan Premium activo</div>
+      <div style="width:100%;margin-top:.8rem;background:linear-gradient(135deg,rgba(255,209,102,.12),rgba(255,209,102,.05));border:1px solid rgba(255,209,102,.35);border-radius:12px;padding:.9rem 1rem;text-align:center">
+        <div style="font-size:.85rem;font-weight:800;color:#FFD166;font-family:'Syne',sans-serif;margin-bottom:.5rem">⭐ Plan Premium activo</div>
+        <div style="font-size:11px;color:var(--m);margin-bottom:.8rem;line-height:1.5">Cursos avanzados · Exportar PDF/Excel · Historial completo · Metas y presupuestos ilimitados</div>
+        <form method="POST" action="/perfil/cancelar-premium" onsubmit="return confirm('¿Seguro que quieres cancelar tu suscripción Premium? Perderás acceso a las funciones exclusivas.')">
+          <button type="submit" style="background:none;border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:.35rem .9rem;font-size:11px;color:var(--m);cursor:pointer;width:100%">Cancelar suscripción</button>
+        </form>
+      </div>
     <%}else{%>
       <form method="POST" action="/perfil/premium" style="width:100%;margin-top:.8rem">
-        <button type="submit" class="btn-p" style="width:100%" onclick="return confirm('¿Activar plan Premium? Tendrás acceso a todos los cursos.')">⬆ Mejorar a Premium</button>
+        <button type="submit" class="btn-p" style="width:100%" onclick="return confirm('¿Activar plan Premium? Tendrás acceso a todas las funciones exclusivas.')">⭐ Mejorar a Premium</button>
       </form>
     <%}%>
 

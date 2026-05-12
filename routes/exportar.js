@@ -5,6 +5,8 @@ const auth = (req,res,next) => req.session.usuario ? next() : res.redirect('/log
 
 // ── PDF ──────────────────────────────────────────────
 router.get('/pdf', auth, async (req, res) => {
+  if (req.session.usuario.plan !== 'premium')
+    return res.redirect('/perfil?upgrade=1');
   const uid  = req.session.usuario.id;
   const m    = new Date().getMonth()+1;
   const y    = new Date().getFullYear();
@@ -116,6 +118,8 @@ router.get('/pdf', auth, async (req, res) => {
 
 // ── EXCEL ─────────────────────────────────────────────
 router.get('/excel', auth, async (req, res) => {
+  if (req.session.usuario.plan !== 'premium')
+    return res.redirect('/perfil?upgrade=1');
   const uid = req.session.usuario.id;
   const ExcelJS = require('exceljs');
 

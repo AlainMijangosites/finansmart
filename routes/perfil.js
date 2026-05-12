@@ -27,7 +27,7 @@ const upload = multer({
 router.get('/', auth, async (req, res) => {
   const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [req.session.usuario.id]);
   req.session.usuario.foto_perfil = datos.foto_perfil || null;
-  res.render('perfil', { usuario:req.session.usuario, datos, ok:null, error:null });
+  res.render('perfil', { usuario:req.session.usuario, datos, ok:req.query.ok||null, error:req.query.error||null, upgrade: req.query.upgrade||null });
 });
 
 router.post('/foto', auth, upload.single('foto'), async (req, res) => {
@@ -89,6 +89,17 @@ router.post('/premium', auth, async (req, res) => {
   } catch(e) {
     const [[datos]] = await db.query('SELECT * FROM usuarios WHERE id=?', [uid]);
     res.render('perfil', { usuario:req.session.usuario, datos, ok:null, error:'Error al activar premium: '+e.message });
+  }
+});
+
+router.post('/cancelar-premium', auth, async (req, res) => {
+  const uid = req.session.usuario.id;
+  try {
+    await db.query('UPDATE usuarios SET plan=? WHERE id=?', ['gratuito', uid]);
+    req.session.usuario.plan = 'gratuito';
+    res.redirect('/perfil?ok=Tu suscripción Premium ha sido cancelada. Ahora tienes el plan gratuito.');
+  } catch(e) {
+    res.redirect('/perfil?error=Error al cancelar: '+e.message);
   }
 });
 

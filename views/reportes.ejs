@@ -6,8 +6,13 @@
     <div class="page-sub">Análisis de tus finanzas del año</div>
   </div>
   <div style="display:flex;gap:.6rem;flex-wrap:wrap">
-    <a href="/exportar/pdf" class="btn-r sm">📄 Exportar PDF</a>
-    <a href="/exportar/excel" class="btn-p sm">📊 Exportar Excel</a>
+    <%if(esPremium){%>
+      <a href="/exportar/pdf" class="btn-r sm">📄 Exportar PDF</a>
+      <a href="/exportar/excel" class="btn-p sm">📊 Exportar Excel</a>
+    <%}else{%>
+      <a href="/perfil" title="Función exclusiva Premium" class="btn-r sm" style="opacity:.5;cursor:pointer">🔒 Exportar PDF</a>
+      <a href="/perfil" title="Función exclusiva Premium" class="btn-p sm" style="opacity:.5;cursor:pointer">🔒 Exportar Excel</a>
+    <%}%>
   </div>
 </div>
 

@@ -31,6 +31,14 @@
   </form>
 </div>
 
+<%if(!esPremium){%>
+<div style="background:linear-gradient(135deg,rgba(255,209,102,.1),rgba(255,209,102,.04));border:1px solid rgba(255,209,102,.3);border-radius:12px;padding:.8rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
+  <span style="font-size:1.3rem">⭐</span>
+  <span style="font-size:13px;color:var(--m);flex:1">Mostrando solo el <strong style="color:var(--w)">mes actual</strong>. Con Premium accedes a todo tu historial y filtros por fecha.</span>
+  <a href="/perfil" style="font-size:12px;font-weight:700;color:#FFD166;white-space:nowrap">Mejorar a Premium →</a>
+</div>
+<%}%>
+
 <!-- FILTROS -->
 <div class="card mb" style="padding:.9rem 1rem">
   <form method="GET" action="/movimientos" style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:flex-end">
@@ -49,6 +57,7 @@
         <%categorias.forEach(c=>{%><option value="<%=c.id%>" <%=catFiltro==c.id?'selected':''%>><%=c.icono%> <%=c.nombre%></option><%})%>
       </select>
     </div>
+    <%if(esPremium){%>
     <div class="fg" style="flex:1;min-width:120px">
       <label>DESDE</label>
       <input type="date" name="fecha_desde" value="<%=fechaDesde%>">
@@ -57,6 +66,16 @@
       <label>HASTA</label>
       <input type="date" name="fecha_hasta" value="<%=fechaHasta%>">
     </div>
+    <%}else{%>
+    <div class="fg" style="flex:1;min-width:120px;opacity:.45;pointer-events:none">
+      <label>DESDE ⭐</label>
+      <input type="date" disabled placeholder="Premium">
+    </div>
+    <div class="fg" style="flex:1;min-width:120px;opacity:.45;pointer-events:none">
+      <label>HASTA ⭐</label>
+      <input type="date" disabled placeholder="Premium">
+    </div>
+    <%}%>
     <div style="display:flex;gap:.4rem">
       <button type="submit" class="btn-p sm">🔍 Filtrar</button>
       <a href="/movimientos" class="btn-g sm">✕ Limpiar</a>

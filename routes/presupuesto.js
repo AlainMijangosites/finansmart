@@ -56,8 +56,10 @@ router.get('/', auth, async (req, res) => {
       promedioDiario,
       diaActual,
       categoriasVerde,
+      esPremium: req.session.usuario.plan === 'premium',
       ok:    req.query.ok    || null,
-      error: req.query.error || null
+      error: req.query.error || null,
+      limit: req.query.limit || null
     });
   } catch(e) {
     console.error('[presupuesto GET]', e.message);
@@ -81,9 +83,15 @@ router.post('/agregar', auth, async (req, res) => {
   const m = parseInt(mes) || new Date().getMonth()+1;
   const y = parseInt(anio) || new Date().getFullYear();
   try {
+    const esPremium = req.session.usuario.plan === 'premium';
     const [ex] = await db.query(
       `SELECT id FROM presupuestos WHERE usuario_id=? AND categoria_id=? AND mes=? AND anio=?`,
       [uid, categoria_id, m, y]);
+    if (!ex.length && !esPremium) {
+      const [[{cnt}]] = await db.query(
+        `SELECT COUNT(*) AS cnt FROM presupuestos WHERE usuario_id=? AND mes=? AND anio=?`, [uid, m, y]);
+      if (cnt >= 3) return res.redirect('/presupuesto?limit=1');
+    }
     if (ex.length)
       await db.query(`UPDATE presupuestos SET limite_monto=? WHERE id=?`, [lim, ex[0].id]);
     else

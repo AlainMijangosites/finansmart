@@ -208,7 +208,7 @@ const CURSOS = {
   },
 
   'salir-deudas-curso': {
-    titulo:'Cómo Salir de las Deudas', icono:'🚫',
+    titulo:'Cómo Salir de las Deudas', icono:'🚫', premium: true,
     categoria:'Deudas', nivel:'Básico', duracion:'1h 30min',
     modulos:[
       { titulo:'Entendiendo tus deudas', contenido:[
@@ -318,7 +318,7 @@ const CURSOS = {
   },
 
   'metodo-50-30-20': {
-    titulo:'Método 50/30/20', icono:'🎯',
+    titulo:'Método 50/30/20', icono:'🎯', premium: true,
     categoria:'Ahorro', nivel:'Básico', duracion:'45min',
     modulos:[
       { titulo:'El origen del método', contenido:[

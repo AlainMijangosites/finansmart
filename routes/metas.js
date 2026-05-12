@@ -20,8 +20,10 @@ router.get('/', auth, async (req, res) => {
     res.render('metas', {
       usuario: req.session.usuario,
       metas, totalAhorro, activas, completadas,
+      esPremium: req.session.usuario.plan === 'premium',
       ok: req.query.ok || null,
-      error: req.query.error || null
+      error: req.query.error || null,
+      limit: req.query.limit || null
     });
   } catch(e) { console.error(e); res.status(500).send('Error: '+e.message); }
 });
@@ -30,6 +32,12 @@ router.post('/agregar', auth, async (req, res) => {
   const uid = req.session.usuario.id;
   const { nombre, icono, monto_objetivo, fecha_limite } = req.body;
   try {
+    const esPremium = req.session.usuario.plan === 'premium';
+    if (!esPremium) {
+      const [[{cnt}]] = await db.query(
+        `SELECT COUNT(*) AS cnt FROM metas WHERE usuario_id=? AND estado='activa'`, [uid]);
+      if (cnt >= 3) return res.redirect('/metas?limit=1');
+    }
     await db.query(
       `INSERT INTO metas (usuario_id, nombre, icono, monto_meta, monto_actual, estado, fecha_limite)
        VALUES (?,?,?,?,0,'activa',?)`,

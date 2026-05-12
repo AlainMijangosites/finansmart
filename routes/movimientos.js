@@ -12,13 +12,20 @@ router.get('/', auth, async (req, res) => {
   const fechaHasta  = req.query.fecha_hasta || '';
   const page        = Math.max(1, parseInt(req.query.page) || 1);
   const perPage     = 20;
+  const esPremium = req.session.usuario.plan === 'premium';
   try {
     let where = 'WHERE m.usuario_id=?';
     const params = [uid];
     if (tipoFiltro === 'ingreso' || tipoFiltro === 'egreso') { where += ' AND m.tipo=?'; params.push(tipoFiltro); }
     if (catFiltro)  { where += ' AND m.categoria_id=?'; params.push(catFiltro); }
-    if (fechaDesde) { where += ' AND m.fecha>=?'; params.push(fechaDesde); }
-    if (fechaHasta) { where += ' AND m.fecha<=?'; params.push(fechaHasta); }
+    if (!esPremium) {
+      // Free users: only current month
+      where += ' AND MONTH(m.fecha)=? AND YEAR(m.fecha)=?';
+      params.push(m, y);
+    } else {
+      if (fechaDesde) { where += ' AND m.fecha>=?'; params.push(fechaDesde); }
+      if (fechaHasta) { where += ' AND m.fecha<=?'; params.push(fechaHasta); }
+    }
 
     const [[{total:totalRows}]] = await db.query(
       `SELECT COUNT(*) AS total FROM movimientos m ${where}`, params);
@@ -40,7 +47,7 @@ router.get('/', auth, async (req, res) => {
     res.render('movimientos', {
       usuario:req.session.usuario, movimientos, categorias, totales,
       tipoFiltro, catFiltro, fechaDesde, fechaHasta,
-      page, totalPages, totalRows, titulo
+      page, totalPages, totalRows, titulo, esPremium
     });
   } catch(e) { console.error(e); res.status(500).send('Error: '+e.message); }
 });
