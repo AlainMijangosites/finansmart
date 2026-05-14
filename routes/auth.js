@@ -1,7 +1,39 @@
-const express = require('express');
-const bcrypt  = require('bcryptjs');
-const db      = require('../config/db');
-const router  = express.Router();
+const express    = require('express');
+const bcrypt     = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const db         = require('../config/db');
+const router     = express.Router();
+
+// Transporter de correo (Gmail con App Password)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  }
+});
+
+async function enviarCorreoReset(correo, token) {
+  const base = process.env.GOOGLE_CALLBACK_URL
+    ? process.env.GOOGLE_CALLBACK_URL.replace('/auth/google/callback', '')
+    : 'http://localhost:3000';
+  const link = `${base}/reset/${token}`;
+
+  await transporter.sendMail({
+    from: `"FinanSmart" <${process.env.EMAIL_USER}>`,
+    to: correo,
+    subject: '🔑 Recupera tu contraseña – FinanSmart',
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;background:#0D1B2A;border-radius:16px;color:#fff">
+        <div style="font-size:24px;font-weight:800;color:#00D49E;margin-bottom:8px">FinanSmart</div>
+        <h2 style="font-size:18px;margin-bottom:16px">Recuperación de contraseña</h2>
+        <p style="color:#8899AA;margin-bottom:24px">Haz clic en el botón para crear una nueva contraseña. El enlace expira en <strong style="color:#fff">1 hora</strong>.</p>
+        <a href="${link}" style="display:inline-block;background:#00D49E;color:#0D1B2A;font-weight:800;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:15px">Restablecer contraseña</a>
+        <p style="color:#5E7A9A;font-size:12px;margin-top:24px">Si no solicitaste esto, ignora este correo. Tu cuenta está segura.</p>
+      </div>
+    `
+  });
+}
 
 // Agregar columnas faltantes si no existen
 db.query(`ALTER TABLE usuarios ADD COLUMN rol VARCHAR(20) DEFAULT 'usuario'`).catch(()=>{});
@@ -18,14 +50,19 @@ router.get('/recuperar', (req, res) => res.render('recuperar', {ok:null, error:n
 router.post('/recuperar', async (req, res) => {
   const { correo } = req.body;
   try {
-    const [rows] = await db.query('SELECT id FROM usuarios WHERE correo=? AND activo=1', [correo]);
+    const [rows] = await db.query('SELECT id FROM usuarios WHERE correo=?', [correo]);
     if (!rows.length) return res.render('recuperar', {ok:null, error:'No existe una cuenta con ese correo.'});
     const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    await db.query(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS reset_token VARCHAR(100) DEFAULT NULL`).catch(()=>{});
     await db.query('UPDATE usuarios SET reset_token=? WHERE correo=?', [token, correo]);
-    console.log(`\n🔑 RESET LINK: http://localhost:3000/reset/${token}\n`);
-    res.render('recuperar', {ok:'✅ Enlace generado. Revisa la consola del servidor (en producción se enviará por correo).', error:null});
-  } catch(e) { res.render('recuperar', {ok:null, error:'Error: '+e.message}); }
+
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      await enviarCorreoReset(correo, token);
+      res.render('recuperar', {ok:'✅ Te enviamos un correo con el enlace para restablecer tu contraseña.', error:null});
+    } else {
+      console.log(`\n🔑 RESET LINK: http://localhost:3000/reset/${token}\n`);
+      res.render('recuperar', {ok:'✅ Enlace generado (revisa consola). Configura EMAIL_USER y EMAIL_PASS para envío real.', error:null});
+    }
+  } catch(e) { res.render('recuperar', {ok:null, error:'Error al enviar el correo: '+e.message}); }
 });
 
 router.get('/reset/:token', async (req, res) => {
