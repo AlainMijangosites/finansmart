@@ -29,10 +29,6 @@ async function enviarCorreoReset(correo, token) {
   });
 }
 
-// Debug: verificar vars de Mailjet al arranque
-console.log('[Mailjet] MAILJET_API_KEY:', process.env.MAILJET_API_KEY ? '✅ SET (len='+process.env.MAILJET_API_KEY.length+')' : '❌ NOT SET');
-console.log('[Mailjet] MAILJET_SECRET_KEY:', process.env.MAILJET_SECRET_KEY ? '✅ SET (len='+process.env.MAILJET_SECRET_KEY.length+')' : '❌ NOT SET');
-
 // Agregar columnas faltantes si no existen
 db.query(`ALTER TABLE usuarios ADD COLUMN rol VARCHAR(20) DEFAULT 'usuario'`).catch(()=>{});
 db.query(`ALTER TABLE usuarios ADD COLUMN meta_ahorro DECIMAL(5,2) DEFAULT 20`).catch(()=>{});
