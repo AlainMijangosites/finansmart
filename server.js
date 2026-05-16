@@ -30,8 +30,9 @@ passport.use(new GoogleStrategy({
     const cats = [
       ['Alimentación','🍔','egreso'],['Transporte','🚗','egreso'],
       ['Entretenimiento','🎬','egreso'],['Salud','💊','egreso'],
-      ['Educación','📚','egreso'],['Servicios','💡','egreso'],
-      ['Sueldo','💰','ingreso'],['Otros','📦','ambos']
+      ['Educación','📚','egreso'],['Ropa','👕','egreso'],
+      ['Servicios','💡','egreso'],['Sueldo','💰','ingreso'],
+      ['Freelance','💻','ingreso'],['Otros','📦','ambos']
     ];
     for (const [n,i,t] of cats)
       await db.query('INSERT INTO categorias (usuario_id,nombre,icono,tipo) VALUES (?,?,?,?)', [r.insertId,n,i,t]);
