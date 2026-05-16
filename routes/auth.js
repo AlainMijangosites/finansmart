@@ -4,15 +4,23 @@ const db      = require('../config/db');
 const router  = express.Router();
 
 async function enviarCorreoReset(correo, token) {
-  const { Resend } = require('resend');
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  const nodemailer = require('nodemailer');
   const base = process.env.GOOGLE_CALLBACK_URL
     ? process.env.GOOGLE_CALLBACK_URL.replace('/auth/google/callback', '')
     : 'http://localhost:3000';
   const link = `${base}/reset/${token}`;
 
-  await resend.emails.send({
-    from: 'FinanSmart <onboarding@resend.dev>',
+  const transporter = nodemailer.createTransport({
+    host: 'smtp-relay.brevo.com',
+    port: 587,
+    auth: {
+      user: process.env.BREVO_LOGIN,
+      pass: process.env.BREVO_SMTP_KEY
+    }
+  });
+
+  await transporter.sendMail({
+    from: '"FinanSmart" <' + process.env.BREVO_LOGIN + '>',
     to: correo,
     subject: '🔑 Recupera tu contraseña – FinanSmart',
     html: `
@@ -47,12 +55,12 @@ router.post('/recuperar', async (req, res) => {
     const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
     await db.query('UPDATE usuarios SET reset_token=? WHERE correo=?', [token, correo]);
 
-    if (process.env.RESEND_API_KEY) {
+    if (process.env.BREVO_LOGIN && process.env.BREVO_SMTP_KEY) {
       await enviarCorreoReset(correo, token);
       res.render('recuperar', {ok:'✅ Te enviamos un correo con el enlace para restablecer tu contraseña.', error:null});
     } else {
       console.log(`\n🔑 RESET LINK: http://localhost:3000/reset/${token}\n`);
-      res.render('recuperar', {ok:'✅ Enlace generado (revisa consola). Configura RESEND_API_KEY para envío real.', error:null});
+      res.render('recuperar', {ok:'✅ Enlace generado (revisa consola). Configura BREVO_LOGIN y BREVO_SMTP_KEY para envío real.', error:null});
     }
   } catch(e) { res.render('recuperar', {ok:null, error:'Error al enviar el correo: '+e.message}); }
 });
