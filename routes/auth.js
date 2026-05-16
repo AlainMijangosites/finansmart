@@ -1,26 +1,18 @@
-const express    = require('express');
-const bcrypt     = require('bcryptjs');
-const nodemailer = require('nodemailer');
-const db         = require('../config/db');
-const router     = express.Router();
-
-// Transporter de correo (Gmail con App Password)
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  }
-});
+const express = require('express');
+const bcrypt  = require('bcryptjs');
+const db      = require('../config/db');
+const router  = express.Router();
 
 async function enviarCorreoReset(correo, token) {
+  const { Resend } = require('resend');
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const base = process.env.GOOGLE_CALLBACK_URL
     ? process.env.GOOGLE_CALLBACK_URL.replace('/auth/google/callback', '')
     : 'http://localhost:3000';
   const link = `${base}/reset/${token}`;
 
-  await transporter.sendMail({
-    from: `"FinanSmart" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'FinanSmart <onboarding@resend.dev>',
     to: correo,
     subject: '🔑 Recupera tu contraseña – FinanSmart',
     html: `
@@ -55,12 +47,12 @@ router.post('/recuperar', async (req, res) => {
     const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
     await db.query('UPDATE usuarios SET reset_token=? WHERE correo=?', [token, correo]);
 
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    if (process.env.RESEND_API_KEY) {
       await enviarCorreoReset(correo, token);
       res.render('recuperar', {ok:'✅ Te enviamos un correo con el enlace para restablecer tu contraseña.', error:null});
     } else {
       console.log(`\n🔑 RESET LINK: http://localhost:3000/reset/${token}\n`);
-      res.render('recuperar', {ok:'✅ Enlace generado (revisa consola). Configura EMAIL_USER y EMAIL_PASS para envío real.', error:null});
+      res.render('recuperar', {ok:'✅ Enlace generado (revisa consola). Configura RESEND_API_KEY para envío real.', error:null});
     }
   } catch(e) { res.render('recuperar', {ok:null, error:'Error al enviar el correo: '+e.message}); }
 });
