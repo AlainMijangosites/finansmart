@@ -4,28 +4,29 @@ const db      = require('../config/db');
 const router  = express.Router();
 
 async function enviarCorreoReset(correo, token) {
-  const { Resend } = require('resend');
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  const Mailjet = require('node-mailjet');
+  const mj = Mailjet.apiConnect(process.env.MAILJET_API_KEY, process.env.MAILJET_SECRET_KEY);
   const base = process.env.GOOGLE_CALLBACK_URL
     ? process.env.GOOGLE_CALLBACK_URL.replace('/auth/google/callback', '')
     : 'http://localhost:3000';
   const link = `${base}/reset/${token}`;
 
-  const result = await resend.emails.send({
-    from: 'FinanSmart <onboarding@resend.dev>',
-    to: [correo],
-    subject: 'Recupera tu contraseña – FinanSmart',
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;background:#0D1B2A;border-radius:16px;color:#fff">
-        <div style="font-size:24px;font-weight:800;color:#00D49E;margin-bottom:8px">FinanSmart</div>
-        <h2 style="font-size:18px;margin-bottom:16px">Recuperación de contraseña</h2>
-        <p style="color:#8899AA;margin-bottom:24px">Haz clic en el botón para crear una nueva contraseña.</p>
-        <a href="${link}" style="display:inline-block;background:#00D49E;color:#0D1B2A;font-weight:800;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:15px">Restablecer contraseña</a>
-        <p style="color:#5E7A9A;font-size:12px;margin-top:24px">Si no solicitaste esto, ignora este correo.</p>
-      </div>
-    `
+  await mj.post('send', { version: 'v3.1' }).request({
+    Messages: [{
+      From: { Email: 'finansmart.app@gmail.com', Name: 'FinanSmart' },
+      To: [{ Email: correo }],
+      Subject: 'Recupera tu contraseña – FinanSmart',
+      HTMLPart: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;background:#0D1B2A;border-radius:16px;color:#fff">
+          <div style="font-size:24px;font-weight:800;color:#00D49E;margin-bottom:8px">FinanSmart</div>
+          <h2 style="font-size:18px;margin-bottom:16px">Recuperación de contraseña</h2>
+          <p style="color:#8899AA;margin-bottom:24px">Haz clic en el botón para crear una nueva contraseña.</p>
+          <a href="${link}" style="display:inline-block;background:#00D49E;color:#0D1B2A;font-weight:800;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:15px">Restablecer contraseña</a>
+          <p style="color:#5E7A9A;font-size:12px;margin-top:24px">Si no solicitaste esto, ignora este correo.</p>
+        </div>
+      `
+    }]
   });
-  if (result.error) throw new Error(result.error.message);
 }
 
 // Agregar columnas faltantes si no existen
@@ -48,7 +49,7 @@ router.post('/recuperar', async (req, res) => {
     const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
     await db.query('UPDATE usuarios SET reset_token=? WHERE correo=?', [token, correo]);
 
-    if (process.env.RESEND_API_KEY) {
+    if (process.env.MAILJET_API_KEY && process.env.MAILJET_SECRET_KEY) {
       await enviarCorreoReset(correo, token);
       res.render('recuperar', {ok:'✅ Te enviamos un correo con el enlace para restablecer tu contraseña. Revisa también tu carpeta de spam.', error:null});
     } else {
